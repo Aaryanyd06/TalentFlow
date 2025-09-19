@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { MSWComponent } from "@/components/MSWComponent";
+import { Providers } from "@/components/Providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,9 +20,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <MSWComponent />
-        <main>{children}</main>
-        <Toaster richColors />
+        <Providers>
+          <MSWComponent />
+          <main>{children}</main>
+          <Toaster richColors />
+        </Providers>
       </body>
     </html>
   );

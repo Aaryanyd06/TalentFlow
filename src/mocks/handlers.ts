@@ -76,4 +76,34 @@ export const handlers = [
     await delay(faker.number.int({ min: 200, max: 1200 }));
     return HttpResponse.json({ success: true });
   }),
+
+  http.patch(`${API_URL}/jobs/:id`, async ({ request, params }) => {
+    const { id } = params;
+    const updates = await request.json() as Partial<Job>;
+
+    const updatedCount = await db.jobs.update(id as string, updates);
+
+    if (updatedCount === 0) {
+      return HttpResponse.json({ error: "Job not found" }, { status: 404 });
+    }
+
+    const updatedJob = await db.jobs.get(id as string);
+    await delay(faker.number.int({ min: 200, max: 800 }));
+
+    return HttpResponse.json(updatedJob);
+  }),
+
+   http.get(`${API_URL}/jobs/:id`, async ({ params }) => {
+    const { id } = params;
+    const job = await db.jobs.get(id as string);
+
+    if (!job) {
+      return HttpResponse.json({ error: "Job not found" }, { status: 404 });
+    }
+    
+    await delay(faker.number.int({ min: 100, max: 500 }));
+    return HttpResponse.json(job);
+  }),
+
+  
 ];

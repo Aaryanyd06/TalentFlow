@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, MoreHorizontal } from "lucide-react";
@@ -70,6 +71,9 @@ export function JobRow({ job, onToggleArchive, onEdit }: JobRowProps) {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={onEdit}>Edit</DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href={`/jobs/${job.id}/assessment`}>Assessment</Link>
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={onToggleArchive}>
               {archiveText}
             </DropdownMenuItem>

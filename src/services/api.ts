@@ -1,4 +1,4 @@
-import type { Job, Candidate, TimelineEvent } from "@/types";
+import type { Job, Candidate, TimelineEvent, Assessment } from "@/types";
 
 type PaginatedResponse<T> = {
   data: T[];
@@ -9,23 +9,6 @@ type PaginatedResponse<T> = {
     totalItems: number;
   };
 };
-
-export async function createJob(
-  newJob: Pick<Job, "title" | "slug" | "status" | "tags">
-): Promise<Job> {
-  const response = await fetch("/api/jobs", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(newJob),
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to create job");
-  }
-  return response.json();
-}
 
 type GetJobsParams = {
   page?: number;
@@ -51,6 +34,23 @@ export async function getJobs({
   return response.json();
 }
 
+export async function createJob(
+  newJob: Pick<Job, "title" | "slug" | "status" | "tags">
+): Promise<Job> {
+  const response = await fetch("/api/jobs", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(newJob),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to create job");
+  }
+  return response.json();
+}
+
 export async function reorderJob({ jobId }: { jobId: string }): Promise<{ success: true }> {
   const response = await fetch(`/api/jobs/${jobId}/reorder`, {
     method: "PATCH",
@@ -63,7 +63,6 @@ export async function reorderJob({ jobId }: { jobId: string }): Promise<{ succes
   }
   return response.json();
 }
-
 
 export async function updateJob(
   jobId: string,
@@ -138,3 +137,22 @@ export async function getCandidateTimeline(candidateId: string): Promise<Timelin
   return response.json();
 }
 
+export async function getAssessmentByJobId(jobId: string): Promise<Assessment> {
+  const response = await fetch(`/api/assessments/${jobId}`);
+  if (!response.ok) {
+    throw new Error("Assessment not found");
+  }
+  return response.json();
+}
+
+export async function saveAssessment(assessment: Assessment): Promise<Assessment> {
+  const response = await fetch(`/api/assessments/${assessment.jobId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(assessment),
+  });
+  if (!response.ok) {
+    throw new Error("Failed to save assessment");
+  }
+  return response.json();
+}

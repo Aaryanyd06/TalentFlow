@@ -32,3 +32,30 @@ export interface TimelineEvent {
   date: string;
   notes?: string;
 }
+
+export type QuestionType =
+  | "single-choice"
+  | "multi-choice"
+  | "short-text"
+  | "long-text"
+  | "numeric"
+  | "file-upload";
+
+export interface AssessmentQuestion {
+  id: string;
+  type: QuestionType;
+  label: string;
+  options?: string[];
+}
+
+export interface AssessmentSection {
+  id: string;
+  title: string;
+  questions: AssessmentQuestion[];
+}
+
+export interface Assessment {
+  id: string;
+  jobId: string;
+  sections: AssessmentSection[];
+}

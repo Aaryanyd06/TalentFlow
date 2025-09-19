@@ -1,0 +1,108 @@
+"use client";
+
+import { useAssessmentBuilderStore } from "@/store/assessmentBuilderStore";
+import { useForm } from "react-hook-form";
+import type { AssessmentQuestion } from "@/types";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
+function QuestionRenderer({ question, control }: { question: AssessmentQuestion, control: any }) {
+  switch (question.type) {
+    case "short-text":
+      return (
+        <FormField
+          control={control}
+          name={question.id}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{question.label}</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      );
+    case "long-text":
+       return (
+        <FormField
+          control={control}
+          name={question.id}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{question.label}</FormLabel>
+              <FormControl>
+                <Textarea {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      );
+    case "single-choice":
+       return (
+        <FormField
+          control={control}
+          name={question.id}
+          render={({ field }) => (
+            <FormItem className="space-y-3">
+              <FormLabel>{question.label}</FormLabel>
+              <FormControl>
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  className="flex flex-col space-y-1"
+                >
+                  {(question.options ?? ['Option 1', 'Option 2']).map(opt => (
+                     <FormItem key={opt} className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                           <RadioGroupItem value={opt} />
+                        </FormControl>
+                        <FormLabel className="font-normal">{opt}</FormLabel>
+                     </FormItem>
+                  ))}
+                </RadioGroup>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      );
+    default:
+      return (
+        <div className="p-3 text-sm rounded-md bg-slate-100 text-slate-500">
+          Preview for "{question.type}" question not implemented yet.
+        </div>
+      );
+  }
+}
+
+export function LivePreview() {
+  const assessment = useAssessmentBuilderStore((state) => state.assessment);
+  const form = useForm();
+
+  return (
+    <div className="bg-white rounded-lg border h-full flex flex-col">
+      <div className="p-4 font-semibold border-b">Live Preview</div>
+      <div className="flex-grow p-4 overflow-y-auto">
+        <Form {...form}>
+          <form className="space-y-6">
+            {assessment.sections.map((section) => (
+              <div key={section.id}>
+                <h3 className="text-lg font-semibold mb-2 border-b pb-1">{section.title}</h3>
+                <div className="space-y-4">
+                  {section.questions.map((question) => (
+                    <QuestionRenderer key={question.id} question={question} control={form.control} />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </form>
+        </Form>
+      </div>
+    </div>
+  );
+}

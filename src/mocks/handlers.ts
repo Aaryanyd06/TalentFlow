@@ -1,7 +1,7 @@
 import { http, HttpResponse, delay } from "msw";
 import { db } from "@/lib/db";
 import { seedDatabase } from "./seed";
-import type { Job, Candidate } from "@/types";
+import type { Job, Candidate, Assessment } from "@/types";
 import { faker } from "@faker-js/faker";
 
 
@@ -161,6 +161,24 @@ export const handlers = [
 
     await delay(faker.number.int({ min: 200, max: 600 }));
     return HttpResponse.json(timelineEvents);
+  }),
+
+
+  http.get(`${API_URL}/assessments/:jobId`, async ({ params }) => {
+    const { jobId } = params;
+    const assessment = await db.assessments.get(jobId as string);
+    if (assessment) {
+      return HttpResponse.json(assessment);
+    }
+    return new HttpResponse(null, { status: 404 });
+  }),
+
+  http.put(`${API_URL}/assessments/:jobId`, async ({ request, params }) => {
+    const { jobId } = params;
+    const assessmentData = (await request.json()) as Assessment;
+    await db.assessments.put({ ...assessmentData, jobId: jobId as string });
+    await delay(500);
+    return HttpResponse.json(assessmentData);
   }),
 
   

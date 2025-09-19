@@ -1,4 +1,4 @@
-import type { Job } from "@/types";
+import type { Job, Candidate } from "@/types";
 
 type PaginatedResponse<T> = {
   data: T[];
@@ -90,3 +90,35 @@ export async function getJobById(jobId: string): Promise<Job> {
   }
   return response.json();
 }
+
+export async function getCandidates(stage?: string): Promise<Candidate[]> {
+  const params = new URLSearchParams();
+  if (stage) {
+    params.append("stage", stage);
+  }
+
+  const response = await fetch(`/api/candidates?${params.toString()}`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch candidates");
+  }
+  return response.json();
+}
+
+export async function updateCandidate(
+  candidateId: string,
+  updates: Partial<Omit<Candidate, "id">>
+): Promise<Candidate> {
+  const response = await fetch(`/api/candidates/${candidateId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(updates),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to update candidate");
+  }
+  return response.json();
+}
+

@@ -1,7 +1,7 @@
 import { http, HttpResponse, delay } from "msw";
 import { db } from "@/lib/db";
 import { seedDatabase } from "./seed";
-import type { Job } from "@/types";
+import type { Job, Candidate } from "@/types";
 import { faker } from "@faker-js/faker";
 
 
@@ -103,6 +103,41 @@ export const handlers = [
     
     await delay(faker.number.int({ min: 100, max: 500 }));
     return HttpResponse.json(job);
+  }),
+
+  http.get(`${API_URL}/candidates`, async ({ request }) => {
+    const url = new URL(request.url);
+    const stage = url.searchParams.get("stage");
+
+    let candidatesQuery = db.candidates.toCollection();
+
+    if (stage) {
+      candidatesQuery = candidatesQuery.filter(
+        (candidate) => candidate.stage === stage
+      );
+    }
+    
+    const candidates = await candidatesQuery.toArray();
+    await delay(faker.number.int({ min: 200, max: 1000 }));
+
+    return HttpResponse.json(candidates);
+  }),
+
+
+  http.patch(`${API_URL}/candidates/:id`, async ({ request, params }) => {
+    const { id } = params;
+    const updates = await request.json() as Partial<Candidate>;
+
+    const updatedCount = await db.candidates.update(id as string, updates);
+
+    if (updatedCount === 0) {
+      return HttpResponse.json({ error: "Candidate not found" }, { status: 404 });
+    }
+
+    const updatedCandidate = await db.candidates.get(id as string);
+    await delay(faker.number.int({ min: 200, max: 800 }));
+
+    return HttpResponse.json(updatedCandidate);
   }),
 
   

@@ -1,4 +1,4 @@
-import type { Job, Candidate } from "@/types";
+import type { Job, Candidate, TimelineEvent } from "@/types";
 
 type PaginatedResponse<T> = {
   data: T[];
@@ -118,6 +118,22 @@ export async function updateCandidate(
 
   if (!response.ok) {
     throw new Error("Failed to update candidate");
+  }
+  return response.json();
+}
+
+export async function getCandidateById(candidateId: string): Promise<Candidate> {
+  const response = await fetch(`/api/candidates/${candidateId}`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch candidate");
+  }
+  return response.json();
+}
+
+export async function getCandidateTimeline(candidateId: string): Promise<TimelineEvent[]> {
+  const response = await fetch(`/api/candidates/${candidateId}/timeline`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch timeline");
   }
   return response.json();
 }

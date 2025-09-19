@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { getCandidates } from "@/services/api";
@@ -111,25 +112,26 @@ export function CandidatesList() {
             {rowVirtualizer.getVirtualItems().map((virtualItem) => {
               const candidate = filteredCandidates[virtualItem.index];
               return (
-                <div
-                  key={virtualItem.key}
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: `${virtualItem.size}px`,
-                    transform: `translateY(${virtualItem.start}px)`,
-                  }}
-                  className="p-4 border-b flex items-center gap-4"
-                >
-                  <div className="h-10 w-10 rounded-full bg-slate-200 flex-shrink-0" />
-                  <div className="flex-grow">
-                    <p className="font-semibold text-slate-800">{candidate.name}</p>
-                    <p className="text-sm text-slate-500">{candidate.email}</p>
+                <Link key={virtualItem.key} href={`/candidates/${candidate.id}`}>
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: `${virtualItem.size}px`,
+                      transform: `translateY(${virtualItem.start}px)`,
+                    }}
+                    className="p-4 border-b flex items-center gap-4 hover:bg-slate-50"
+                  >
+                    <div className="h-10 w-10 rounded-full bg-slate-200 flex-shrink-0" />
+                    <div className="flex-grow">
+                      <p className="font-semibold text-slate-800">{candidate.name}</p>
+                      <p className="text-sm text-slate-500">{candidate.email}</p>
+                    </div>
+                    <Badge variant="outline" className="capitalize">{candidate.stage}</Badge>
                   </div>
-                  <Badge variant="outline" className="capitalize">{candidate.stage}</Badge>
-                </div>
+                </Link>
               );
             })}
           </div>

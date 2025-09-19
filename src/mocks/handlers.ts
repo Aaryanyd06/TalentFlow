@@ -140,5 +140,28 @@ export const handlers = [
     return HttpResponse.json(updatedCandidate);
   }),
 
+  http.get(`${API_URL}/candidates/:id`, async ({ params }) => {
+    const { id } = params;
+    const candidate = await db.candidates.get(id as string);
+
+    if (!candidate) {
+      return HttpResponse.json({ error: "Candidate not found" }, { status: 404 });
+    }
+    
+    await delay(faker.number.int({ min: 100, max: 400 }));
+    return HttpResponse.json(candidate);
+  }),
+
+  http.get(`${API_URL}/candidates/:id/timeline`, async ({ params }) => {
+    const { id } = params;
+    const timelineEvents = await db.timeline
+      .where('candidateId')
+      .equals(id as string)
+      .sortBy('date');
+
+    await delay(faker.number.int({ min: 200, max: 600 }));
+    return HttpResponse.json(timelineEvents);
+  }),
+
   
 ];

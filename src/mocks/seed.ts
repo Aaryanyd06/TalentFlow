@@ -1,9 +1,11 @@
 import { faker } from "@faker-js/faker";
 import { db } from "@/lib/db";
-import type { Job, Candidate, JobStatus, CandidateStage } from "@/types";
+import type { Job, Candidate, JobStatus, CandidateStage, TimelineEvent } from "@/types";
 
 const JOB_COUNT = 25;
 const CANDIDATE_COUNT = 1000;
+
+const STAGE_PROGRESSION: CandidateStage[] = ["applied", "screen", "tech", "offer", "hired"];
 
 export async function seedDatabase() {
   const jobCount = await db.jobs.count();
@@ -32,18 +34,59 @@ export async function seedDatabase() {
   await db.jobs.bulkAdd(jobs);
 
   const candidates: Candidate[] = [];
+  const timelineEvents: TimelineEvent[] = [];
+  let currentDate = new Date();
+
   for (let i = 0; i < CANDIDATE_COUNT; i++) {
+    const candidateId = faker.string.uuid();
+    const currentStage = faker.helpers.arrayElement<CandidateStage>([
+      "applied", "screen", "tech", "offer", "hired", "rejected"
+    ]);
+
     candidates.push({
-      id: faker.string.uuid(),
+      id: candidateId,
       name: faker.person.fullName(),
       email: faker.internet.email(),
       jobId: faker.helpers.arrayElement(jobs).id,
-      stage: faker.helpers.arrayElement<CandidateStage>([
-        "applied", "screen", "tech", "offer", "hired", "rejected"
-      ]),
+      stage: currentStage,
     });
-  }
-  await db.candidates.bulkAdd(candidates);
 
-  console.log("Database seeded successfully!");
+    let lastStageDate = faker.date.past({ years: 1, refDate: currentDate });
+    
+    if (currentStage === "rejected") {
+      const rejectionPoint = faker.number.int({ min: 0, max: STAGE_PROGRESSION.indexOf("tech") });
+      for(let j = 0; j <= rejectionPoint; j++) {
+        lastStageDate = faker.date.future({ years: 0.1, refDate: lastStageDate });
+        timelineEvents.push({
+          id: faker.string.uuid(),
+          candidateId: candidateId,
+          stage: STAGE_PROGRESSION[j],
+          date: lastStageDate.toISOString(),
+        });
+      }
+      lastStageDate = faker.date.future({ years: 0.1, refDate: lastStageDate });
+      timelineEvents.push({
+        id: faker.string.uuid(),
+        candidateId: candidateId,
+        stage: "rejected",
+        date: lastStageDate.toISOString(),
+      });
+    } else {
+      const currentStageIndex = STAGE_PROGRESSION.indexOf(currentStage);
+      for(let j = 0; j <= currentStageIndex; j++) {
+        lastStageDate = faker.date.future({ years: 0.1, refDate: lastStageDate });
+        timelineEvents.push({
+          id: faker.string.uuid(),
+          candidateId: candidateId,
+          stage: STAGE_PROGRESSION[j],
+          date: lastStageDate.toISOString(),
+        });
+      }
+    }
+  }
+
+  await db.candidates.bulkAdd(candidates);
+  await db.timeline.bulkAdd(timelineEvents);
+
+  console.log("Database seeded successfully with timeline data!");
 }

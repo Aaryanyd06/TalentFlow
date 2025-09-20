@@ -3,6 +3,8 @@
 import { useAssessmentBuilderStore } from "@/store/assessmentBuilderStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import {
   Accordion,
   AccordionContent,
@@ -33,7 +35,7 @@ export function BuilderControls() {
       <div className="p-4 font-semibold border-b">Controls</div>
       <div className="flex-grow p-4 space-y-4 overflow-y-auto">
         <Accordion type="multiple" defaultValue={store.assessment.sections.map(s => s.id)}>
-          {store.assessment.sections.map((section, sectionIndex) => (
+          {store.assessment.sections.map((section) => (
             <AccordionItem key={section.id} value={section.id}>
               <div className="flex items-center">
                 <AccordionTrigger className="flex-grow">
@@ -48,18 +50,28 @@ export function BuilderControls() {
                 </Button>
               </div>
               <AccordionContent>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {section.questions.map((q) => (
-                    <div key={q.id} className="p-3 rounded-md border bg-slate-50 flex items-center gap-2">
-                      <Input
-                        value={q.label}
-                        onChange={(e) => store.updateQuestionLabel(section.id, q.id, e.target.value)}
-                        className="flex-grow bg-transparent border-none focus-visible:ring-0"
-                      />
-                      <span className="text-xs text-slate-400">({q.type})</span>
-                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => store.removeQuestion(section.id, q.id)}>
-                        <Trash2 className="h-3 w-3 text-slate-500" />
-                      </Button>
+                    <div key={q.id} className="p-3 rounded-md border bg-slate-50 space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Input
+                          value={q.label}
+                          onChange={(e) => store.updateQuestionLabel(section.id, q.id, e.target.value)}
+                          className="flex-grow bg-transparent border-none focus-visible:ring-0"
+                        />
+                        <span className="text-xs text-slate-400">({q.type})</span>
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => store.removeQuestion(section.id, q.id)}>
+                          <Trash2 className="h-3 w-3 text-slate-500" />
+                        </Button>
+                      </div>
+                      <div className="flex items-center space-x-2 border-t pt-3">
+                        <Switch
+                          id={`required-${q.id}`}
+                          checked={q.isRequired}
+                          onCheckedChange={() => store.toggleQuestionRequired(section.id, q.id)}
+                        />
+                        <Label htmlFor={`required-${q.id}`}>Required</Label>
+                      </div>
                     </div>
                   ))}
                   <DropdownMenu>

@@ -10,6 +10,7 @@ type AssessmentState = {
   addQuestion: (sectionId: string, type: QuestionType) => void;
   updateQuestionLabel: (sectionId: string, questionId: string, label: string) => void;
   removeQuestion: (sectionId: string, questionId: string) => void;
+  toggleQuestionRequired: (sectionId: string, questionId: string) => void;
 };
 
 const createInitialState = (jobId: string): Assessment => ({
@@ -59,7 +60,7 @@ export const useAssessmentBuilderStore = create<AssessmentState>((set) => ({
         sections: state.assessment.sections.map((section) => {
           if (section.id === sectionId) {
             const newQuestion: AssessmentQuestion = {
-              id: crypto.randomUUID(), type, label: "New Question",
+              id: crypto.randomUUID(), type, label: "New Question", isRequired: false
             };
             return { ...section, questions: [...section.questions, newQuestion] };
           }
@@ -93,6 +94,24 @@ export const useAssessmentBuilderStore = create<AssessmentState>((set) => ({
         sections: state.assessment.sections.map(s => {
           if (s.id === sectionId) {
             return { ...s, questions: s.questions.filter(q => q.id !== questionId) };
+          }
+          return s;
+        }),
+      },
+    })),
+  
+  toggleQuestionRequired: (sectionId, questionId) =>
+    set((state) => ({
+      assessment: {
+        ...state.assessment,
+        sections: state.assessment.sections.map(s => {
+          if (s.id === sectionId) {
+            return {
+              ...s,
+              questions: s.questions.map(q => 
+                q.id === questionId ? { ...q, isRequired: !q.isRequired } : q
+              ),
+            };
           }
           return s;
         }),

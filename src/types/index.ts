@@ -56,6 +56,7 @@ export interface AssessmentSection {
 
 export interface Assessment {
   id: string;
+  type: QuestionType;
   jobId: string;
   sections: AssessmentSection[];
 }

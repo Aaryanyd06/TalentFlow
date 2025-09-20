@@ -63,7 +63,7 @@ function QuestionRenderer({ question, control }: { question: AssessmentQuestion,
                   defaultValue={field.value}
                   className="flex flex-col space-y-1"
                 >
-                  {(question.options ?? ['Option 1', 'Option 2']).map(opt => (
+                  {(question.options ?? []).map(opt => (
                      <FormItem key={opt} className="flex items-center space-x-3 space-y-0">
                         <FormControl>
                            <RadioGroupItem value={opt} />
@@ -78,9 +78,25 @@ function QuestionRenderer({ question, control }: { question: AssessmentQuestion,
           )}
         />
       );
+    case "numeric":
+      return (
+        <FormField
+          control={control}
+          name={question.id}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{labelContent}</FormLabel>
+              <FormControl>
+                <Input type="number" min={question.min} max={question.max} {...field} onChange={event => field.onChange(+event.target.value)} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      );
     default:
       return (
-        <div className="p-3 text-sm rounded-md bg-slate-100 text-slate-500">
+        <div className="p-3 text-sm rounded-md bg-muted text-muted-foreground">
           Preview for "{question.type}" question not implemented yet.
         </div>
       );
@@ -92,7 +108,7 @@ export function LivePreview() {
   const form = useForm();
 
   return (
-    <div className="bg-white rounded-lg border h-full flex flex-col">
+    <div className="bg-card rounded-lg border h-full flex flex-col">
       <div className="p-4 font-semibold border-b">Live Preview</div>
       <div className="flex-grow p-4 overflow-y-auto">
         <Form {...form}>

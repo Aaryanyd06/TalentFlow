@@ -57,8 +57,9 @@ export interface AssessmentQuestion {
   label: string;
   isRequired?: boolean;
   options?: string[];
+  min?: number; 
+  max?: number; 
 }
-
 export interface AssessmentSection {
   id: string;
   title: string;

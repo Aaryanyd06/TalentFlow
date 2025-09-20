@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { useDebounce } from "@/hooks/useDebounce";
 import type { Candidate, CandidateStage } from "@/types";
+import { User } from "lucide-react";
 
 const STAGES: CandidateStage[] = [
   "applied", "screen", "tech", "offer", "hired", "rejected"
@@ -124,7 +125,9 @@ export function CandidatesList() {
                     }}
                     className="p-4 border-b flex items-center gap-4 hover:bg-accent"
                   >
-                    <div className="h-10 w-10 rounded-full bg-secondary flex-shrink-0" />
+                    <div className="h-10 w-10 rounded-full bg-secondary flex-shrink-0 flex items-center justify-center">
+                      <User className="h-5 w-5 text-muted-foreground" />
+                    </div>
                     <div className="flex-grow">
                       <p className="font-semibold text-card-foreground">{candidate.name}</p>
                       <p className="text-sm text-muted-foreground">{candidate.email}</p>

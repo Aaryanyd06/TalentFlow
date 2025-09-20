@@ -60,6 +60,7 @@ export async function seedDatabase() {
         timelineEvents.push({
           id: faker.string.uuid(),
           candidateId: candidateId,
+          type: 'stage-change',
           stage: STAGE_PROGRESSION[j],
           date: lastStageDate.toISOString(),
         });
@@ -68,6 +69,7 @@ export async function seedDatabase() {
       timelineEvents.push({
         id: faker.string.uuid(),
         candidateId: candidateId,
+        type: 'stage-change',
         stage: "rejected",
         date: lastStageDate.toISOString(),
       });
@@ -78,6 +80,7 @@ export async function seedDatabase() {
         timelineEvents.push({
           id: faker.string.uuid(),
           candidateId: candidateId,
+          type: 'stage-change',
           stage: STAGE_PROGRESSION[j],
           date: lastStageDate.toISOString(),
         });

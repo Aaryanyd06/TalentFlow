@@ -54,7 +54,7 @@ export function CandidatesList() {
 
   if (isError) {
     return (
-      <div className="flex justify-center items-center h-64 bg-slate-100 rounded-md">
+      <div className="flex justify-center items-center h-64 bg-muted rounded-md">
         <p className="text-red-600 font-medium">Failed to load candidates.</p>
       </div>
     );
@@ -88,7 +88,7 @@ export function CandidatesList() {
       {isLoading ? (
         <div className="space-y-2">
           {Array.from({ length: 10 }).map((_, i) => (
-            <div key={i} className="flex items-center space-x-4 p-4 border rounded-md">
+            <div key={i} className="flex items-center space-x-4 p-4 border rounded-md bg-card">
               <Skeleton className="h-10 w-10 rounded-full" />
               <div className="space-y-2">
                 <Skeleton className="h-4 w-48" />
@@ -100,7 +100,7 @@ export function CandidatesList() {
       ) : (
         <div
           ref={parentRef}
-          className="flex-grow overflow-y-auto border rounded-md bg-white"
+          className="flex-grow overflow-y-auto border rounded-md bg-card"
         >
           <div
             style={{
@@ -122,12 +122,12 @@ export function CandidatesList() {
                       height: `${virtualItem.size}px`,
                       transform: `translateY(${virtualItem.start}px)`,
                     }}
-                    className="p-4 border-b flex items-center gap-4 hover:bg-slate-50"
+                    className="p-4 border-b flex items-center gap-4 hover:bg-accent"
                   >
-                    <div className="h-10 w-10 rounded-full bg-slate-200 flex-shrink-0" />
+                    <div className="h-10 w-10 rounded-full bg-secondary flex-shrink-0" />
                     <div className="flex-grow">
-                      <p className="font-semibold text-slate-800">{candidate.name}</p>
-                      <p className="text-sm text-slate-500">{candidate.email}</p>
+                      <p className="font-semibold text-card-foreground">{candidate.name}</p>
+                      <p className="text-sm text-muted-foreground">{candidate.email}</p>
                     </div>
                     <Badge variant="outline" className="capitalize">{candidate.stage}</Badge>
                   </div>

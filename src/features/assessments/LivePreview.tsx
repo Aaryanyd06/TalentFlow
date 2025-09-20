@@ -9,6 +9,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 function QuestionRenderer({ question, control }: { question: AssessmentQuestion, control: any }) {
+  const labelContent = (
+    <>
+      {question.label}
+      {question.isRequired && <span className="text-red-500 ml-1">*</span>}
+    </>
+  );
+
   switch (question.type) {
     case "short-text":
       return (
@@ -17,7 +24,7 @@ function QuestionRenderer({ question, control }: { question: AssessmentQuestion,
           name={question.id}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{question.label}</FormLabel>
+              <FormLabel>{labelContent}</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -33,7 +40,7 @@ function QuestionRenderer({ question, control }: { question: AssessmentQuestion,
           name={question.id}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{question.label}</FormLabel>
+              <FormLabel>{labelContent}</FormLabel>
               <FormControl>
                 <Textarea {...field} />
               </FormControl>
@@ -49,7 +56,7 @@ function QuestionRenderer({ question, control }: { question: AssessmentQuestion,
           name={question.id}
           render={({ field }) => (
             <FormItem className="space-y-3">
-              <FormLabel>{question.label}</FormLabel>
+              <FormLabel>{labelContent}</FormLabel>
               <FormControl>
                 <RadioGroup
                   onValueChange={field.onChange}

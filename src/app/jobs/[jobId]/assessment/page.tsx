@@ -3,8 +3,6 @@
 import { useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Header } from "@/components/layout/header";
-import { Sidebar } from "@/components/layout/sidebar";
 import { Button } from "@/components/ui/button";
 import { Save } from "lucide-react";
 import { useAssessmentBuilderStore } from "@/store/assessmentBuilderStore";
@@ -56,31 +54,25 @@ export default function AssessmentBuilderPage() {
   };
 
   return (
-    <div className="flex h-screen w-full flex-col bg-slate-50">
-      <Header />
-      <div className="flex flex-1 overflow-hidden">
-        <Sidebar />
-        <div className="flex flex-1 flex-col overflow-hidden">
-          <div className="flex items-center justify-between p-4 border-b bg-white">
-            <div>
-              <h1 className="text-xl font-semibold">Assessment Builder</h1>
-              <p className="text-sm text-slate-500">
-                Designing the assessment for job: {jobId}
-              </p>
-            </div>
-            <Button onClick={handleSave} disabled={saveMutation.isPending}>
-              {saveMutation.isPending ? "Saving..." : <><Save className="mr-2 h-4 w-4" /> Save Assessment</>}
-            </Button>
-          </div>
-          <div className="flex-1 grid grid-cols-2 gap-4 p-4 overflow-y-auto">
-            {isLoading ? <p>Loading assessment...</p> : (
-              <>
-                <BuilderControls />
-                <LivePreview />
-              </>
-            )}
-          </div>
+    <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex items-center justify-between p-4 border-b bg-background">
+        <div>
+          <h1 className="text-xl font-semibold">Assessment Builder</h1>
+          <p className="text-sm text-muted-foreground">
+            Designing the assessment for job: {jobId}
+          </p>
         </div>
+        <Button onClick={handleSave} disabled={saveMutation.isPending}>
+          {saveMutation.isPending ? "Saving..." : <><Save className="mr-2 h-4 w-4" /> Save Assessment</>}
+        </Button>
+      </div>
+      <div className="flex-1 grid md:grid-cols-2 gap-4 p-4 overflow-y-auto">
+        {isLoading ? <p>Loading assessment...</p> : (
+          <>
+            <BuilderControls />
+            <LivePreview />
+          </>
+        )}
       </div>
     </div>
   );

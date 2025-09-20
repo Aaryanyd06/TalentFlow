@@ -156,3 +156,28 @@ export async function saveAssessment(assessment: Assessment): Promise<Assessment
   }
   return response.json();
 }
+
+
+export async function submitAssessment(jobId: string, submission: any): Promise<{ success: true }> {
+  const response = await fetch(`/api/assessments/${jobId}/submit`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ jobId, submission, submittedAt: new Date().toISOString() }),
+  });
+  if (!response.ok) {
+    throw new Error("Failed to submit assessment");
+  }
+  return response.json();
+}
+
+export async function addTimelineNote(candidateId: string, notes: string): Promise<TimelineEvent> {
+  const response = await fetch(`/api/candidates/${candidateId}/timeline`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ notes }),
+  });
+  if (!response.ok) {
+    throw new Error("Failed to add note");
+  }
+  return response.json();
+}

@@ -1,7 +1,7 @@
 import { http, HttpResponse, delay } from "msw";
 import { db } from "@/lib/db";
 import { seedDatabase } from "./seed";
-import type { Job, Candidate, Assessment } from "@/types";
+import type { Job, Candidate, Assessment, TimelineEvent } from "@/types";
 import { faker } from "@faker-js/faker";
 
 
@@ -181,5 +181,28 @@ export const handlers = [
     return HttpResponse.json(assessmentData);
   }),
 
-  
+    http.post(`${API_URL}/assessments/:jobId/submit`, async ({ request }) => {
+    const responseData = await request.json();
+    await db.assessmentResponses.add(responseData);
+    await delay(500);
+    return HttpResponse.json({ success: true });
+  }),
+
+  http.post(`${API_URL}/candidates/:id/timeline`, async ({ request, params }) => {
+    const candidateId = params.id as string;
+    const { notes } = await request.json() as { notes: string };
+
+    const newEvent: TimelineEvent = {
+      id: crypto.randomUUID(),
+      candidateId,
+      type: 'note',
+      notes,
+      date: new Date().toISOString(),
+    };
+
+    await db.timeline.add(newEvent);
+    await delay(300);
+    return HttpResponse.json(newEvent, { status: 201 });
+  }),
+
 ];

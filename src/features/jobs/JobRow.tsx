@@ -38,15 +38,19 @@ export function JobRow({ job, onToggleArchive, onEdit }: JobRowProps) {
   const archiveText = job.status === "active" ? "Archive" : "Unarchive";
 
   return (
-    <TableRow ref={setNodeRef} style={style} {...attributes}>
+    <TableRow ref={setNodeRef} style={style} {...attributes} data-state={job.status === 'archived' ? 'archived' : ''} className="data-[state=archived]:opacity-50">
       <TableCell className="w-12">
         <div className="flex justify-center">
           <button {...listeners} className="cursor-grab active:cursor-grabbing">
-            <GripVertical className="h-5 w-5 text-slate-400" />
+            <GripVertical className="h-5 w-5 text-muted-foreground" />
           </button>
         </div>
       </TableCell>
-      <TableCell className="font-medium text-slate-800">{job.title}</TableCell>
+      <TableCell className="font-medium">
+        <Link href={`/jobs/${job.id}`} className="hover:underline text-foreground">
+          {job.title}
+        </Link>
+      </TableCell>
       <TableCell>
         <Badge variant={job.status === "active" ? "default" : "secondary"}>
           {job.status}

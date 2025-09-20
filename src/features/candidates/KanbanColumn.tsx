@@ -20,7 +20,7 @@ export function KanbanColumn({ id, title, candidates }: KanbanColumnProps) {
         </span>
       </div>
       <SortableContext id={id} items={candidates} strategy={verticalListSortingStrategy}>
-        <div className="bg-slate-100 rounded-md p-2 space-y-2 h-full overflow-y-auto">
+        <div className="bg-muted rounded-md p-2 space-y-2 h-full overflow-y-auto">
           {candidates.map((candidate) => (
             <CandidateCard key={candidate.id} candidate={candidate} />
           ))}

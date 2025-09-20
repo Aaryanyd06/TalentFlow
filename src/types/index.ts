@@ -25,13 +25,23 @@ export interface Candidate {
   stage: CandidateStage;
 }
 
-export interface TimelineEvent {
-  id: string;
-  candidateId: string;
-  stage: CandidateStage;
-  date: string;
-  notes?: string;
-}
+export type TimelineEvent =
+  | {
+      id: string;
+      candidateId: string;
+      type: 'stage-change';
+      stage: CandidateStage;
+      date: string;
+      notes?: string;
+    }
+  | {
+      id: string;
+      candidateId: string;
+      type: 'note';
+      notes: string;
+      date: string;
+    };
+
 
 export type QuestionType =
   | "single-choice"
@@ -45,6 +55,7 @@ export interface AssessmentQuestion {
   id: string;
   type: QuestionType;
   label: string;
+  isRequired?: boolean;
   options?: string[];
 }
 
@@ -56,7 +67,6 @@ export interface AssessmentSection {
 
 export interface Assessment {
   id: string;
-  type: QuestionType;
   jobId: string;
   sections: AssessmentSection[];
 }

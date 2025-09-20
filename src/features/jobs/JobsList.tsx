@@ -133,9 +133,6 @@ export function JobsList({ onEditJob }: JobsListProps) {
         queryClient.setQueryData(queryKey, context.previousJobsData);
       }
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey });
-    },
   });
 
   const updateJobMutation = useMutation({
@@ -209,7 +206,7 @@ export function JobsList({ onEditJob }: JobsListProps) {
       {isLoading && !data ? (
         <JobsListSkeleton />
       ) : (
-        <div className="rounded-md border bg-white">
+        <div className="rounded-md border bg-card">
           <DndContext
             collisionDetection={closestCenter}
             onDragEnd={handleDragEnd}

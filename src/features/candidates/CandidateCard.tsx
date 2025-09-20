@@ -32,10 +32,10 @@ export function CandidateCard({ candidate }: CandidateCardProps) {
         style={style}
         {...attributes}
         {...listeners}
-        className="p-3 bg-white rounded-md border shadow-sm cursor-grab active:cursor-grabbing hover:border-indigo-500"
+        className="p-3 bg-card rounded-md border shadow-sm cursor-grab active:cursor-grabbing hover:border-primary"
       >
-        <p className="font-semibold text-sm text-slate-800">{candidate.name}</p>
-        <p className="text-xs text-slate-500">{candidate.email}</p>
+        <p className="font-semibold text-sm text-card-foreground">{candidate.name}</p>
+        <p className="text-xs text-muted-foreground">{candidate.email}</p>
       </div>
     </Link>
   );

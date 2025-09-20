@@ -15,7 +15,7 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 flex-shrink-0 border-r border-slate-200 bg-white">
+    <aside className="w-64 flex-shrink-0 border-r bg-background">
       <div className="flex h-full flex-col">
         <div className="p-4">
           <nav>
@@ -27,8 +27,8 @@ export function Sidebar() {
                     className={cn(
                       "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                       pathname === item.href
-                        ? "bg-indigo-50 text-indigo-600"
-                        : "text-slate-600 hover:bg-slate-50"
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                     )}
                   >
                     <item.icon className="h-5 w-5" />

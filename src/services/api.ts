@@ -16,6 +16,12 @@ type GetJobsParams = {
   status?: string;
 };
 
+type SubmitAssessmentPayload = {
+  jobId: string;
+  submission: Record<string, unknown>; // safer than any
+  submittedAt: string;
+};
+
 export async function getJobs({
   page = 1,
   search = "",
@@ -27,7 +33,6 @@ export async function getJobs({
   if (status) params.append("status", status);
 
   const response = await fetch(`/api/jobs?${params.toString()}`);
-
   if (!response.ok) {
     throw new Error("Failed to fetch jobs");
   }
@@ -39,9 +44,7 @@ export async function createJob(
 ): Promise<Job> {
   const response = await fetch("/api/jobs", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(newJob),
   });
 
@@ -70,9 +73,7 @@ export async function updateJob(
 ): Promise<Job> {
   const response = await fetch(`/api/jobs/${jobId}`, {
     method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(updates),
   });
 
@@ -92,9 +93,7 @@ export async function getJobById(jobId: string): Promise<Job> {
 
 export async function getCandidates(stage?: string): Promise<Candidate[]> {
   const params = new URLSearchParams();
-  if (stage) {
-    params.append("stage", stage);
-  }
+  if (stage) params.append("stage", stage);
 
   const response = await fetch(`/api/candidates?${params.toString()}`);
   if (!response.ok) {
@@ -109,9 +108,7 @@ export async function updateCandidate(
 ): Promise<Candidate> {
   const response = await fetch(`/api/candidates/${candidateId}`, {
     method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(updates),
   });
 
@@ -157,25 +154,38 @@ export async function saveAssessment(assessment: Assessment): Promise<Assessment
   return response.json();
 }
 
+export async function submitAssessment(
+  jobId: string,
+  submission: Record<string, unknown>
+): Promise<{ success: true }> {
+  const payload: SubmitAssessmentPayload = {
+    jobId,
+    submission,
+    submittedAt: new Date().toISOString(),
+  };
 
-export async function submitAssessment(jobId: string, submission: any): Promise<{ success: true }> {
   const response = await fetch(`/api/assessments/${jobId}/submit`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ jobId, submission, submittedAt: new Date().toISOString() }),
+    body: JSON.stringify(payload),
   });
+
   if (!response.ok) {
     throw new Error("Failed to submit assessment");
   }
   return response.json();
 }
 
-export async function addTimelineNote(candidateId: string, notes: string): Promise<TimelineEvent> {
+export async function addTimelineNote(
+  candidateId: string,
+  notes: string
+): Promise<TimelineEvent> {
   const response = await fetch(`/api/candidates/${candidateId}/timeline`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ notes }),
   });
+
   if (!response.ok) {
     throw new Error("Failed to add note");
   }

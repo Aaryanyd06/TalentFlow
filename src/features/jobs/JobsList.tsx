@@ -5,35 +5,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getJobs, reorderJob, updateJob } from "@/services/api";
 import type { Job } from "@/types";
 import { useDebounce } from "@/hooks/useDebounce";
-import {
-  DndContext,
-  closestCenter,
-  type DragEndEvent,
-} from "@dnd-kit/core";
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-  arrayMove,
-} from "@dnd-kit/sortable";
+import { DndContext, closestCenter, type DragEndEvent } from "@dnd-kit/core";
+import { SortableContext, verticalListSortingStrategy, arrayMove } from "@dnd-kit/sortable";
 import { JobRow } from "./JobRow";
-import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
-  TableCell,
-} from "@/components/ui/table";
+import { Table, TableBody, TableHead, TableHeader, TableRow, TableCell } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 
 function JobsListSkeleton() {
@@ -90,16 +69,25 @@ type JobsListProps = {
   onEditJob: (jobId: string) => void;
 };
 
+// Type for reorder mutation variables
+type ReorderVariables = {
+  activeId: string;
+  overId: string;
+};
+
 export function JobsList({ onEditJob }: JobsListProps) {
   const queryClient = useQueryClient();
-  const [page, setPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
+  const [page, setPage] = useState<number>(1);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<string>("");
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
   const queryKey = ["jobs", page, debouncedSearchTerm, statusFilter];
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError } = useQuery<{
+    data: Job[];
+    pagination: { page: number; totalPages: number };
+  }>({
     queryKey,
     queryFn: () =>
       getJobs({
@@ -112,19 +100,24 @@ export function JobsList({ onEditJob }: JobsListProps) {
 
   const reorderMutation = useMutation({
     mutationFn: reorderJob,
-    onMutate: async (variables) => {
+    onMutate: async (variables: ReorderVariables) => {
       await queryClient.cancelQueries({ queryKey });
       const previousJobsData = queryClient.getQueryData(queryKey);
-      queryClient.setQueryData(queryKey, (oldData: any) => {
+
+      queryClient.setQueryData(queryKey, (oldData: { data: Job[] } | undefined) => {
+        if (!oldData) return oldData;
+
         const oldJobs = oldData.data;
-        const { activeId, overId } = variables as any;
-        const activeIndex = oldJobs.findIndex((j: Job) => j.id === activeId);
-        const overIndex = oldJobs.findIndex((j: Job) => j.id === overId);
+        const { activeId, overId } = variables;
+        const activeIndex = oldJobs.findIndex((j) => j.id === activeId);
+        const overIndex = oldJobs.findIndex((j) => j.id === overId);
+
         return {
           ...oldData,
           data: arrayMove(oldJobs, activeIndex, overIndex),
         };
       });
+
       return { previousJobsData };
     },
     onError: (err, variables, context) => {
@@ -136,13 +129,8 @@ export function JobsList({ onEditJob }: JobsListProps) {
   });
 
   const updateJobMutation = useMutation({
-    mutationFn: ({
-      jobId,
-      updates,
-    }: {
-      jobId: string;
-      updates: Partial<Job>;
-    }) => updateJob(jobId, updates),
+    mutationFn: ({ jobId, updates }: { jobId: string; updates: Partial<Job> }) =>
+      updateJob(jobId, updates),
     onSuccess: () => {
       toast.success("Job status updated.");
       queryClient.invalidateQueries({ queryKey });
@@ -161,10 +149,9 @@ export function JobsList({ onEditJob }: JobsListProps) {
     const { active, over } = event;
     if (over && active.id !== over.id) {
       reorderMutation.mutate({
-        jobId: active.id as string,
-        activeId: active.id,
-        overId: over.id,
-      } as any);
+        activeId: active.id as string,
+        overId: over.id as string,
+      });
     }
   }
 
@@ -189,9 +176,7 @@ export function JobsList({ onEditJob }: JobsListProps) {
         />
         <Select
           value={statusFilter}
-          onValueChange={(value) =>
-            setStatusFilter(value === "all" ? "" : value)
-          }
+          onValueChange={(value) => setStatusFilter(value === "all" ? "" : value)}
         >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Filter by status" />
@@ -203,14 +188,12 @@ export function JobsList({ onEditJob }: JobsListProps) {
           </SelectContent>
         </Select>
       </div>
+
       {isLoading && !data ? (
         <JobsListSkeleton />
       ) : (
         <div className="rounded-md border bg-card">
-          <DndContext
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
+          <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext
               items={jobs.map((j) => j.id)}
               strategy={verticalListSortingStrategy}
@@ -228,7 +211,7 @@ export function JobsList({ onEditJob }: JobsListProps) {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {jobs.map((job: Job) => (
+                  {jobs.map((job) => (
                     <JobRow
                       key={job.id}
                       job={job}
@@ -242,6 +225,7 @@ export function JobsList({ onEditJob }: JobsListProps) {
           </DndContext>
         </div>
       )}
+
       <div className="flex items-center justify-between">
         <span className="text-sm text-slate-600">
           Page {data?.pagination.page} of {data?.pagination.totalPages}

@@ -39,7 +39,7 @@ const SaveIcon: FC<React.SVGProps<SVGSVGElement>> = (props) => (
 );
 
 const TalentFlowLogo: FC<React.SVGProps<SVGSVGElement>> = (props) => (
-    <svg {...props} width="175" height="28" viewBox="0 0 124 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg {...props} width="124" height="28" viewBox="0 0 124 28" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
             <linearGradient id="logoGradient" x1="0" y1="0" x2="1" y2="1">
                 <stop offset="0%" stopColor="#4F46E5" />
@@ -369,34 +369,47 @@ export default function LandingPage() {
         </AnimatedComponent>
       </section>
 
-      <section className="bg-black py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <AnimatedComponent className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">Client Success Stories And Testimonials</h2>
-            <p className="mt-6 text-lg leading-8 text-gray-300">
-                Explore Experiences Shared by Those Who've Thrived With Our Human Resources Tools
-            </p>
-          </AnimatedComponent>
-          <div className="mx-auto mt-16 flow-root max-w-2xl sm:mt-20 lg:mx-0 lg:max-w-none">
-            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {testimonials.map((testimonial, index) => (
-                  <AnimatedComponent key={index} delay={index * 100}>
-                    <div className="break-inside-avoid-column rounded-xl bg-gray-800/60 p-6 h-full">
-                        <p className="text-gray-300">"{testimonial.text}"</p>
-                        <div className="mt-4 flex items-center gap-3">
-                            <img className="h-10 w-10 rounded-full" src={`https://placehold.co/40x40/E2E8F0/4A5568?text=${testimonial.avatar}`} alt={testimonial.name} />
-                            <div>
-                                <div className="font-semibold text-white">{testimonial.name}</div>
-                                <div className="text-sm text-gray-400">{testimonial.company}</div>
-                            </div>
-                        </div>
-                    </div>
-                  </AnimatedComponent>
-              ))}
+      <section className="bg-white dark:bg-black py-24 sm:py-32">
+  <div className="mx-auto max-w-7xl px-6 lg:px-8">
+    <AnimatedComponent className="mx-auto max-w-2xl text-center">
+      <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+        Client Success Stories And Testimonials
+      </h2>
+      <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
+        Explore Experiences Shared by Those Who've Thrived With Our Human Resources Tools
+      </p>
+    </AnimatedComponent>
+
+    <div className="mx-auto mt-16 flow-root max-w-2xl sm:mt-20 lg:mx-0 lg:max-w-none">
+      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        {testimonials.map((testimonial, index) => (
+          <AnimatedComponent key={index} delay={index * 100}>
+            <div className="break-inside-avoid-column rounded-xl bg-gray-100 dark:bg-gray-800/60 p-6 h-full shadow-sm">
+              <p className="text-gray-700 dark:text-gray-300">"{testimonial.text}"</p>
+              <div className="mt-4 flex items-center gap-3">
+                <img
+                  className="h-10 w-10 rounded-full"
+                  src={`https://placehold.co/40x40/E2E8F0/4A5568?text=${testimonial.avatar}`}
+                  alt={testimonial.name}
+                />
+                <div>
+                  <div className="font-semibold text-gray-900 dark:text-white">
+                    {testimonial.name}
+                  </div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    {testimonial.company}
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </section>
+          </AnimatedComponent>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+
     </main>
 
     <footer className="bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800">

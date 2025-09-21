@@ -19,10 +19,11 @@ export async function seedDatabase() {
 
   const jobs: Job[] = [];
   for (let i = 0; i < JOB_COUNT; i++) {
+    const jobTitle = faker.person.jobTitle();
     jobs.push({
       id: faker.string.uuid(),
-      title: faker.person.jobTitle(),
-      slug: faker.helpers.slugify(faker.person.jobTitle()).toLowerCase(),
+      title: jobTitle,
+      slug: faker.helpers.slugify(jobTitle).toLowerCase(),
       status: faker.helpers.arrayElement<JobStatus>(["active", "archived"]),
       tags: faker.helpers.arrayElements(
         ["React", "TypeScript", "Remote", "Node.js", "GraphQL"],
@@ -35,32 +36,39 @@ export async function seedDatabase() {
 
   const candidates: Candidate[] = [];
   const timelineEvents: TimelineEvent[] = [];
-  let currentDate = new Date();
+  const currentDate = new Date();
 
   for (let i = 0; i < CANDIDATE_COUNT; i++) {
     const candidateId = faker.string.uuid();
     const currentStage = faker.helpers.arrayElement<CandidateStage>([
-      "applied", "screen", "tech", "offer", "hired", "rejected"
+      "applied",
+      "screen",
+      "tech",
+      "offer",
+      "hired",
+      "rejected",
     ]);
+
+    const jobId = faker.helpers.arrayElement(jobs).id;
 
     candidates.push({
       id: candidateId,
       name: faker.person.fullName(),
       email: faker.internet.email(),
-      jobId: faker.helpers.arrayElement(jobs).id,
+      jobId,
       stage: currentStage,
     });
 
     let lastStageDate = faker.date.past({ years: 1, refDate: currentDate });
-    
+
     if (currentStage === "rejected") {
       const rejectionPoint = faker.number.int({ min: 0, max: STAGE_PROGRESSION.indexOf("tech") });
-      for(let j = 0; j <= rejectionPoint; j++) {
+      for (let j = 0; j <= rejectionPoint; j++) {
         lastStageDate = faker.date.future({ years: 0.1, refDate: lastStageDate });
         timelineEvents.push({
           id: faker.string.uuid(),
-          candidateId: candidateId,
-          type: 'stage-change',
+          candidateId,
+          type: "stage-change",
           stage: STAGE_PROGRESSION[j],
           date: lastStageDate.toISOString(),
         });
@@ -68,19 +76,19 @@ export async function seedDatabase() {
       lastStageDate = faker.date.future({ years: 0.1, refDate: lastStageDate });
       timelineEvents.push({
         id: faker.string.uuid(),
-        candidateId: candidateId,
-        type: 'stage-change',
+        candidateId,
+        type: "stage-change",
         stage: "rejected",
         date: lastStageDate.toISOString(),
       });
     } else {
       const currentStageIndex = STAGE_PROGRESSION.indexOf(currentStage);
-      for(let j = 0; j <= currentStageIndex; j++) {
+      for (let j = 0; j <= currentStageIndex; j++) {
         lastStageDate = faker.date.future({ years: 0.1, refDate: lastStageDate });
         timelineEvents.push({
           id: faker.string.uuid(),
-          candidateId: candidateId,
-          type: 'stage-change',
+          candidateId,
+          type: "stage-change",
           stage: STAGE_PROGRESSION[j],
           date: lastStageDate.toISOString(),
         });

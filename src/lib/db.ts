@@ -1,32 +1,38 @@
 import Dexie, { type Table } from "dexie";
 import type { Job, Candidate, TimelineEvent, Assessment } from "@/types";
 
+// Define a type for assessment responses (replace `Record<string, unknown>` with actual structure if known)
+export type AssessmentResponse = Record<string, unknown>;
+
 export class TalentFlowDB extends Dexie {
   jobs!: Table<Job>;
   candidates!: Table<Candidate>;
   timeline!: Table<TimelineEvent>;
   assessments!: Table<Assessment, string>;
-  assessmentResponses!: Table<any, string>;
+  assessmentResponses!: Table<AssessmentResponse, string>;
 
   constructor() {
     super("talentFlowDatabase");
+
     this.version(1).stores({
       jobs: "++id, title, status, slug, order",
       candidates: "++id, name, email, stage, jobId",
       timeline: "++id, candidateId, date",
     });
+
     this.version(2).stores({
       jobs: "++id, title, status, slug, order",
       candidates: "++id, name, email, stage, jobId",
       timeline: "++id, candidateId, date",
       assessments: "jobId",
     });
+
     this.version(3).stores({
       jobs: "++id, title, status, slug, order",
       candidates: "++id, name, email, stage, jobId",
       timeline: "++id, candidateId, date",
       assessments: "jobId",
-      assessmentResponses: "++id", // Add the new table
+      assessmentResponses: "++id",
     });
   }
 }

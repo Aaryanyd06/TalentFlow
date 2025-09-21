@@ -53,7 +53,13 @@ type JobsListProps = {
   onEditJob: (jobId: string) => void;
 };
 
-// Type for reorder mutation variables
+// Define a specific type for the data returned by the getJobs query
+type JobsQueryData = {
+  data: Job[];
+  pagination: { page: number; totalPages: number };
+};
+
+// Define the type for the variables passed to the reorder mutation
 type ReorderVariables = {
   activeId: string;
   overId: string;
@@ -61,37 +67,35 @@ type ReorderVariables = {
 
 export function JobsList({ onEditJob }: JobsListProps) {
   const queryClient = useQueryClient();
-  const [page, setPage] = useState<number>(1);
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [page, setPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
   const queryKey = ["jobs", page, debouncedSearchTerm, statusFilter];
 
-  const { data, isLoading, isError } = useQuery<{
-    data: Job[];
-    pagination: { page: number; totalPages: number };
-  }>({
+  const { data, isLoading, isError } = useQuery<JobsQueryData>({
     queryKey,
-    queryFn: () =>
-      getJobs({ page, search: debouncedSearchTerm, status: statusFilter }),
+    queryFn: () => getJobs({ page, search: debouncedSearchTerm, status: statusFilter }),
     placeholderData: (previousData) => previousData,
   });
 
   const reorderMutation = useMutation({
-    mutationFn: reorderJob,
+    mutationFn: (variables: ReorderVariables) => reorderJob({ jobId: variables.activeId }),
     onMutate: async (variables: ReorderVariables) => {
       await queryClient.cancelQueries({ queryKey });
-      const previousJobsData = queryClient.getQueryData(queryKey);
+      const previousJobsData = queryClient.getQueryData<JobsQueryData>(queryKey);
 
-      queryClient.setQueryData(queryKey, (oldData) => {
-        if (!oldData || !("data" in oldData)) return oldData;
+      queryClient.setQueryData<JobsQueryData>(queryKey, (oldData) => {
+        if (!oldData) return oldData;
 
         const oldJobs = oldData.data;
         const { activeId, overId } = variables;
         const activeIndex = oldJobs.findIndex((j) => j.id === activeId);
         const overIndex = oldJobs.findIndex((j) => j.id === overId);
-
+        
+        if (activeIndex === -1 || overIndex === -1) return oldData;
+        
         return { ...oldData, data: arrayMove(oldJobs, activeIndex, overIndex) };
       });
 
@@ -106,8 +110,7 @@ export function JobsList({ onEditJob }: JobsListProps) {
   });
 
   const updateJobMutation = useMutation({
-    mutationFn: ({ jobId, updates }: { jobId: string; updates: Partial<Job> }) =>
-      updateJob(jobId, updates),
+    mutationFn: ({ jobId, updates }: { jobId: string; updates: Partial<Job> }) => updateJob(jobId, updates),
     onSuccess: () => {
       toast.success("Job status updated.");
       queryClient.invalidateQueries({ queryKey });
@@ -131,7 +134,7 @@ export function JobsList({ onEditJob }: JobsListProps) {
 
   if (isError) {
     return (
-      <div className="flex justify-center items-center h-64 bg-slate-100 rounded-md">
+      <div className="flex justify-center items-center h-64 bg-muted rounded-md">
         <p className="text-red-600 font-medium">Failed to load jobs.</p>
       </div>
     );
@@ -196,7 +199,7 @@ export function JobsList({ onEditJob }: JobsListProps) {
       )}
 
       <div className="flex items-center justify-between">
-        <span className="text-sm text-slate-600">
+        <span className="text-sm text-muted-foreground">
           Page {data?.pagination.page} of {data?.pagination.totalPages}
         </span>
         <div className="flex items-center gap-2">

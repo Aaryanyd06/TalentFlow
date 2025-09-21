@@ -21,42 +21,26 @@ function JobsListSkeleton() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-12"></TableHead>
-            <TableHead className="w-[40%]">
-              <Skeleton className="h-5 w-20" />
-            </TableHead>
-            <TableHead>
-              <Skeleton className="h-5 w-20" />
-            </TableHead>
-            <TableHead>
-              <Skeleton className="h-5 w-24" />
-            </TableHead>
-            <TableHead>
-              <span className="sr-only">Actions</span>
-            </TableHead>
+            <TableHead className="w-12" />
+            <TableHead className="w-[40%]"><Skeleton className="h-5 w-20" /></TableHead>
+            <TableHead><Skeleton className="h-5 w-20" /></TableHead>
+            <TableHead><Skeleton className="h-5 w-24" /></TableHead>
+            <TableHead><span className="sr-only">Actions</span></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {Array.from({ length: 5 }).map((_, i) => (
             <TableRow key={i}>
-              <TableCell>
-                <Skeleton className="h-5 w-5" />
-              </TableCell>
-              <TableCell>
-                <Skeleton className="h-5 w-48" />
-              </TableCell>
-              <TableCell>
-                <Skeleton className="h-5 w-24" />
-              </TableCell>
+              <TableCell><Skeleton className="h-5 w-5" /></TableCell>
+              <TableCell><Skeleton className="h-5 w-48" /></TableCell>
+              <TableCell><Skeleton className="h-5 w-24" /></TableCell>
               <TableCell>
                 <div className="flex space-x-2">
                   <Skeleton className="h-6 w-16 rounded-full" />
                   <Skeleton className="h-6 w-20 rounded-full" />
                 </div>
               </TableCell>
-              <TableCell>
-                <Skeleton className="h-8 w-8" />
-              </TableCell>
+              <TableCell><Skeleton className="h-8 w-8" /></TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -90,11 +74,7 @@ export function JobsList({ onEditJob }: JobsListProps) {
   }>({
     queryKey,
     queryFn: () =>
-      getJobs({
-        page,
-        search: debouncedSearchTerm,
-        status: statusFilter,
-      }),
+      getJobs({ page, search: debouncedSearchTerm, status: statusFilter }),
     placeholderData: (previousData) => previousData,
   });
 
@@ -104,18 +84,15 @@ export function JobsList({ onEditJob }: JobsListProps) {
       await queryClient.cancelQueries({ queryKey });
       const previousJobsData = queryClient.getQueryData(queryKey);
 
-      queryClient.setQueryData(queryKey, (oldData: { data: Job[] } | undefined) => {
-        if (!oldData) return oldData;
+      queryClient.setQueryData(queryKey, (oldData) => {
+        if (!oldData || !("data" in oldData)) return oldData;
 
         const oldJobs = oldData.data;
         const { activeId, overId } = variables;
         const activeIndex = oldJobs.findIndex((j) => j.id === activeId);
         const overIndex = oldJobs.findIndex((j) => j.id === overId);
 
-        return {
-          ...oldData,
-          data: arrayMove(oldJobs, activeIndex, overIndex),
-        };
+        return { ...oldData, data: arrayMove(oldJobs, activeIndex, overIndex) };
       });
 
       return { previousJobsData };
@@ -148,10 +125,7 @@ export function JobsList({ onEditJob }: JobsListProps) {
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
     if (over && active.id !== over.id) {
-      reorderMutation.mutate({
-        activeId: active.id as string,
-        overId: over.id as string,
-      });
+      reorderMutation.mutate({ activeId: active.id as string, overId: over.id as string });
     }
   }
 
@@ -194,20 +168,15 @@ export function JobsList({ onEditJob }: JobsListProps) {
       ) : (
         <div className="rounded-md border bg-card">
           <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-            <SortableContext
-              items={jobs.map((j) => j.id)}
-              strategy={verticalListSortingStrategy}
-            >
+            <SortableContext items={jobs.map((j) => j.id)} strategy={verticalListSortingStrategy}>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-12"></TableHead>
+                    <TableHead className="w-12" />
                     <TableHead className="w-[40%]">Position</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Tags</TableHead>
-                    <TableHead>
-                      <span className="sr-only">Actions</span>
-                    </TableHead>
+                    <TableHead><span className="sr-only">Actions</span></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

@@ -1,3 +1,4 @@
+
 export type JobStatus = "active" | "archived";
 
 export interface Job {
@@ -29,7 +30,7 @@ export type TimelineEvent =
   | {
       id: string;
       candidateId: string;
-      type: 'stage-change';
+      type: "stage-change";
       stage: CandidateStage;
       date: string;
       notes?: string;
@@ -37,11 +38,10 @@ export type TimelineEvent =
   | {
       id: string;
       candidateId: string;
-      type: 'note';
+      type: "note";
       notes: string;
       date: string;
     };
-
 
 export type QuestionType =
   | "single-choice"
@@ -57,9 +57,10 @@ export interface AssessmentQuestion {
   label: string;
   isRequired?: boolean;
   options?: string[];
-  min?: number; 
-  max?: number; 
+  min?: number;
+  max?: number;
 }
+
 export interface AssessmentSection {
   id: string;
   title: string;
@@ -70,4 +71,8 @@ export interface Assessment {
   id: string;
   jobId: string;
   sections: AssessmentSection[];
+}
+
+export interface ReorderJobResponse {
+  success: true;
 }

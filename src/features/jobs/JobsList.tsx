@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getJobs, reorderJob, updateJob } from "@/services/api";
-import type { Job } from "@/types";
+import type { Job, ReorderJobResponse } from "@/types";
 import { useDebounce } from "@/hooks/useDebounce";
 import { DndContext, closestCenter, type DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy, arrayMove } from "@dnd-kit/sortable";
@@ -53,16 +53,18 @@ type JobsListProps = {
   onEditJob: (jobId: string) => void;
 };
 
-// Define a specific type for the data returned by the getJobs query
 type JobsQueryData = {
   data: Job[];
   pagination: { page: number; totalPages: number };
 };
 
-// Define the type for the variables passed to the reorder mutation
 type ReorderVariables = {
   activeId: string;
   overId: string;
+};
+
+type ReorderContext = {
+  previousJobsData?: JobsQueryData;
 };
 
 export function JobsList({ onEditJob }: JobsListProps) {
@@ -80,9 +82,14 @@ export function JobsList({ onEditJob }: JobsListProps) {
     placeholderData: (previousData) => previousData,
   });
 
-  const reorderMutation = useMutation({
-    mutationFn: (variables: ReorderVariables) => reorderJob({ jobId: variables.activeId }),
-    onMutate: async (variables: ReorderVariables) => {
+  const reorderMutation = useMutation<
+    ReorderJobResponse,
+    unknown,
+    ReorderVariables,
+    ReorderContext
+  >({
+    mutationFn: (variables) => reorderJob({ jobId: variables.activeId }),
+    onMutate: async (variables) => {
       await queryClient.cancelQueries({ queryKey });
       const previousJobsData = queryClient.getQueryData<JobsQueryData>(queryKey);
 
@@ -93,15 +100,15 @@ export function JobsList({ onEditJob }: JobsListProps) {
         const { activeId, overId } = variables;
         const activeIndex = oldJobs.findIndex((j) => j.id === activeId);
         const overIndex = oldJobs.findIndex((j) => j.id === overId);
-        
+
         if (activeIndex === -1 || overIndex === -1) return oldData;
-        
+
         return { ...oldData, data: arrayMove(oldJobs, activeIndex, overIndex) };
       });
 
       return { previousJobsData };
     },
-    onError: (err, variables, context) => {
+    onError: (_err, _variables, context) => {
       toast.error("Failed to reorder job. Reverting.");
       if (context?.previousJobsData) {
         queryClient.setQueryData(queryKey, context.previousJobsData);
@@ -110,7 +117,8 @@ export function JobsList({ onEditJob }: JobsListProps) {
   });
 
   const updateJobMutation = useMutation({
-    mutationFn: ({ jobId, updates }: { jobId: string; updates: Partial<Job> }) => updateJob(jobId, updates),
+    mutationFn: ({ jobId, updates }: { jobId: string; updates: Partial<Job> }) =>
+      updateJob(jobId, updates),
     onSuccess: () => {
       toast.success("Job status updated.");
       queryClient.invalidateQueries({ queryKey });

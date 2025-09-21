@@ -6,7 +6,7 @@ import { Briefcase, LayoutDashboard, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { href: "/", icon: LayoutDashboard, label: "Dashboard" },
+  { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/jobs", icon: Briefcase, label: "Jobs" },
   { href: "/candidates", icon: Users, label: "Candidates" },
 ];

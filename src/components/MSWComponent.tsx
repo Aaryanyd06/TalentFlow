@@ -1,17 +1,19 @@
+
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState } from "react";
 
-export function MSWComponent({ children }: { children: ReactNode }) {
-  const [isReady, setIsReady] = useState(process.env.NODE_ENV !== "development");
+export function MSWComponent({ children }: { children: React.ReactNode }) {
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    if (process.env.NODE_ENV === "development" && !isReady) {
-      const initMSW = async () => {
-        const { worker } = await import("@/mocks/browser");
-        await worker.start();
-        setIsReady(true);
-      };
+    const initMSW = async () => {
+      const { worker } = await import("@/mocks/browser");
+      await worker.start();
+      setIsReady(true);
+    };
+
+    if (!isReady) {
       initMSW();
     }
   }, [isReady]);
@@ -19,6 +21,6 @@ export function MSWComponent({ children }: { children: ReactNode }) {
   if (!isReady) {
     return null;
   }
-
+  
   return <>{children}</>;
 }

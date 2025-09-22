@@ -1,9 +1,8 @@
 import { http, HttpResponse, delay } from "msw";
-import { db } from "@/lib/db";
+import { db, type AssessmentResponse } from "@/lib/db";
 import { seedDatabase } from "./seed";
 import type { Job, Candidate, Assessment, TimelineEvent } from "@/types";
 import { faker } from "@faker-js/faker";
-
 
 const API_URL = "/api";
 
@@ -93,7 +92,7 @@ export const handlers = [
     return HttpResponse.json(updatedJob);
   }),
 
-   http.get(`${API_URL}/jobs/:id`, async ({ params }) => {
+  http.get(`${API_URL}/jobs/:id`, async ({ params }) => {
     const { id } = params;
     const job = await db.jobs.get(id as string);
 
@@ -122,7 +121,6 @@ export const handlers = [
 
     return HttpResponse.json(candidates);
   }),
-
 
   http.patch(`${API_URL}/candidates/:id`, async ({ request, params }) => {
     const { id } = params;
@@ -163,7 +161,6 @@ export const handlers = [
     return HttpResponse.json(timelineEvents);
   }),
 
-
   http.get(`${API_URL}/assessments/:jobId`, async ({ params }) => {
     const { jobId } = params;
     const assessment = await db.assessments.get(jobId as string);
@@ -181,8 +178,8 @@ export const handlers = [
     return HttpResponse.json(assessmentData);
   }),
 
-    http.post(`${API_URL}/assessments/:jobId/submit`, async ({ request }) => {
-    const responseData = await request.json();
+  http.post(`${API_URL}/assessments/:jobId/submit`, async ({ request }) => {
+    const responseData = await request.json() as AssessmentResponse;
     await db.assessmentResponses.add(responseData);
     await delay(500);
     return HttpResponse.json({ success: true });
@@ -204,5 +201,4 @@ export const handlers = [
     await delay(300);
     return HttpResponse.json(newEvent, { status: 201 });
   }),
-
 ];

@@ -1,19 +1,26 @@
+
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-export function MSWComponent() {
+export function MSWComponent({ children }: { children: React.ReactNode }) {
+  const [isReady, setIsReady] = useState(false);
+
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      if (process.env.NODE_ENV === "development") {
-        import("@/mocks/browser").then(({ worker }) => {
-          worker.start().then(() => {
-            fetch("/api/seed", { method: "POST" });
-          });
-        });
-      }
-    }
-  }, []);
+    const initMSW = async () => {
+      const { worker } = await import("@/mocks/browser");
+      await worker.start();
+      setIsReady(true);
+    };
 
-  return null;
+    if (!isReady) {
+      initMSW();
+    }
+  }, [isReady]);
+
+  if (!isReady) {
+    return null;
+  }
+  
+  return <>{children}</>;
 }

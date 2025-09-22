@@ -10,6 +10,13 @@ import {
   PieProps,
 } from "recharts";
 
+// FIX 1: Replaced 'any' with a more specific union type.
+interface PieDataItem {
+  name: string;
+  value: number;
+  [key: string]: string | number;
+}
+
 const COLORS = [
   "#003F5C",
   "#58508D",
@@ -18,15 +25,13 @@ const COLORS = [
   "#FFA600",
 ];
 
-const data = [
+const data: PieDataItem[] = [
   { name: "Applied", value: 400 },
   { name: "Screening", value: 300 },
   { name: "Interview", value: 200 },
   { name: "Offer", value: 50 },
   { name: "Hired", value: 25 },
 ];
-
-const RADIAN = Math.PI / 180;
 
 function getContrastTextColor(hex: string) {
   const raw = hex.replace("#", "");
@@ -37,8 +42,18 @@ function getContrastTextColor(hex: string) {
   return brightness > 150 ? "#111827" : "#ffffff";
 }
 
-const renderCustomizedLabel: PieProps["label"] = (props) => {
-  const { cx, cy, midAngle, innerRadius, outerRadius, percent, index } = props as any;
+interface CustomizedLabelProps {
+  cx: number;
+  cy: number;
+  midAngle: number;
+  innerRadius: number;
+  outerRadius: number;
+  percent: number;
+  index: number;
+}
+
+const renderCustomizedLabel = (props: CustomizedLabelProps): ReactElement => {
+  const { cx, cy, midAngle, innerRadius, outerRadius, percent, index } = props;
   const RADIAN = Math.PI / 180;
   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -60,8 +75,19 @@ const renderCustomizedLabel: PieProps["label"] = (props) => {
   );
 };
 
+interface ActiveShapeProps {
+  cx: number;
+  cy: number;
+  innerRadius: number;
+  outerRadius: number;
+  startAngle: number;
+  endAngle: number;
+  fill: string;
+  payload: PieDataItem;
+  value: number;
+}
 
-const renderActiveShape = (props: any): ReactElement => {
+const renderActiveShape = (props: ActiveShapeProps): ReactElement => {
   const {
     cx,
     cy,
@@ -76,10 +102,25 @@ const renderActiveShape = (props: any): ReactElement => {
 
   return (
     <g>
-      <text x={cx} y={cy} dy={-12} textAnchor="middle" fill="#4A90E2" className="text-lg font-bold" style={{ fontSize: 14 }}>
+      <text
+        x={cx}
+        y={cy}
+        dy={-12}
+        textAnchor="middle"
+        fill="#4A90E2"
+        className="text-lg font-bold"
+        style={{ fontSize: 14 }}
+      >
         {payload.name}
       </text>
-      <text x={cx} y={cy} dy={12} textAnchor="middle" fill="#4A90E2" style={{ fontSize: 13 }}>
+      <text
+        x={cx}
+        y={cy}
+        dy={12}
+        textAnchor="middle"
+        fill="#4A90E2"
+        style={{ fontSize: 13 }}
+      >
         {value}
       </text>
       <Sector
@@ -100,19 +141,28 @@ const renderActiveShape = (props: any): ReactElement => {
   );
 };
 
-interface CustomPieProps extends PieProps {
+interface CustomPieProps extends Omit<PieProps, "activeShape" | "label"> {
   activeIndex?: number;
-  activeShape?: (props: any) => ReactElement;
+  activeShape?: (props: ActiveShapeProps) => ReactElement;
+  label?: ((props: CustomizedLabelProps) => ReactElement) | boolean;
 }
 
 function CustomPie(props: CustomPieProps) {
-  return <Pie {...props} />;
+  return (
+    <Pie
+      {...props}
+      // FIX 2: Replaced 'as any' with a safer, more explicit cast.
+      activeShape={props.activeShape as unknown as PieProps["activeShape"]}
+      // FIX 3: Replaced 'as any' with a safer, more explicit cast.
+      label={props.label as unknown as PieProps["label"]}
+    />
+  );
 }
 
 export default function PipelineChart() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
-  const onPieEnter = (_: any, index: number) => {
+  const onPieEnter = (_: PieDataItem, index: number) => {
     setActiveIndex(index);
   };
 
@@ -122,7 +172,9 @@ export default function PipelineChart() {
 
   return (
     <div className="bg-card p-6 rounded-lg h-[400px] flex flex-col">
-      <h3 className="text-xl font-bold tracking-tight mb-4 ml-[115px]">Candidate Pipeline</h3>
+      <h3 className="text-xl font-bold tracking-tight mb-4 ml-[115px]">
+        Candidate Pipeline
+      </h3>
       <div className="flex-grow">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
@@ -136,7 +188,7 @@ export default function PipelineChart() {
               onMouseEnter={onPieEnter}
               onMouseLeave={onPieLeave}
               paddingAngle={0}
-              isAnimationActive={true}
+              isAnimationActive
               animationBegin={0}
               animationDuration={900}
               animationEasing="ease-in-out"

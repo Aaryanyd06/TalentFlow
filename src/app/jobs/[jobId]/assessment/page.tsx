@@ -15,7 +15,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function AssessmentBuilderPage() {
   const params = useParams();
   const jobId = params.jobId as string;
-  const store = useAssessmentBuilderStore();
+  // Destructure state and actions directly from the store
+  const { assessment, setAssessment } = useAssessmentBuilderStore();
   const queryClient = useQueryClient();
 
   const { data: job, isLoading: isLoadingJob } = useQuery({
@@ -36,16 +37,17 @@ export default function AssessmentBuilderPage() {
   useEffect(() => {
     if (!isLoadingAssessment) {
       if (existingAssessment) {
-        store.setAssessment(existingAssessment);
+        setAssessment(existingAssessment);
       } else {
-        store.setAssessment({
+        setAssessment({
           id: crypto.randomUUID(),
           jobId: jobId,
           sections: [],
         });
       }
     }
-  }, [isLoadingAssessment, existingAssessment, jobId, store.setAssessment]);
+    // Use the destructured 'setAssessment' in the dependency array
+  }, [isLoadingAssessment, existingAssessment, jobId, setAssessment]);
 
   const saveMutation = useMutation({
     mutationFn: saveAssessment,
@@ -53,7 +55,7 @@ export default function AssessmentBuilderPage() {
       toast.success("Assessment saved successfully!");
       queryClient.invalidateQueries({ queryKey: ["assessment", jobId] });
       // Reset the store to a new, empty state
-      store.setAssessment({
+      setAssessment({
         id: crypto.randomUUID(),
         jobId: jobId,
         sections: [],
@@ -66,10 +68,10 @@ export default function AssessmentBuilderPage() {
 
   const handleSave = () => {
     // Only save if there's at least one section with at least one question
-    if (store.assessment.sections.some(s => s.questions.length > 0)) {
-       saveMutation.mutate(store.assessment);
+    if (assessment.sections.some(s => s.questions.length > 0)) {
+        saveMutation.mutate(assessment);
     } else {
-       toast.warning("Cannot save an empty assessment.");
+        toast.warning("Cannot save an empty assessment.");
     }
   };
 
@@ -79,7 +81,7 @@ export default function AssessmentBuilderPage() {
         <div>
           <h1 className="text-xl font-semibold">Assessment Builder</h1>
           {isLoadingJob ? (
-             <Skeleton className="h-5 w-64 mt-1" />
+            <Skeleton className="h-5 w-64 mt-1" />
           ) : (
             <p className="text-sm text-muted-foreground">
               Designing the assessment for: <span className="font-medium text-foreground">{job?.title}</span>

@@ -9,7 +9,7 @@ import { Header } from "@/components/layout/header";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "TalentFlow",
   description: "A mini hiring platform",
 };
@@ -23,7 +23,6 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <Providers>
-          
           <MSWComponent>
             <div className="flex h-screen w-full flex-col">
               <Header />

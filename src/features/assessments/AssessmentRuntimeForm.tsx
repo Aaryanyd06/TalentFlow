@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getAssessmentByJobId, submitAssessment } from "@/services/api";
-import { useForm } from "react-hook-form";
+import { useForm, type Control, type FieldValues } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import type { Assessment, AssessmentQuestion } from "@/types";
@@ -28,8 +28,6 @@ function buildZodSchema(assessment: Assessment) {
         rule = rule.optional();
       }
 
-      // This handles cases where the field might not be a string, like for numeric or file inputs later.
-      // For now, it defaults to optional if not required.
       if (question.type !== 'short-text' && question.type !== 'long-text' && question.type !== 'single-choice') {
          schemaShape[question.id] = z.any().optional();
       } else {
@@ -40,7 +38,12 @@ function buildZodSchema(assessment: Assessment) {
   return z.object(schemaShape);
 }
 
-function QuestionRenderer({ question, control }: { question: AssessmentQuestion, control: any }) {
+type QuestionRendererProps = {
+  question: AssessmentQuestion;
+  control: Control<FieldValues>;
+};
+
+function QuestionRenderer({ question, control }: QuestionRendererProps) {
   const labelContent = (
     <>
       {question.label}
@@ -68,8 +71,8 @@ function QuestionRenderer({ question, control }: { question: AssessmentQuestion,
             <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex flex-col space-y-1">
               {(question.options ?? ['Option 1', 'Option 2']).map(opt => (
                  <FormItem key={opt} className="flex items-center space-x-3 space-y-0">
-                    <FormControl><RadioGroupItem value={opt} /></FormControl>
-                    <FormLabel className="font-normal">{opt}</FormLabel>
+                   <FormControl><RadioGroupItem value={opt} /></FormControl>
+                   <FormLabel className="font-normal">{opt}</FormLabel>
                  </FormItem>
               ))}
             </RadioGroup>
@@ -87,14 +90,15 @@ export function AssessmentRuntimeForm({ jobId }: { jobId: string }) {
     queryFn: () => getAssessmentByJobId(jobId),
   });
 
-  const validationSchema = useMemo(() => assessment ? buildZodSchema(assessment) : z.object({}), [assessment]);
+  // 👇 THIS IS THE ONLY LINE THAT CHANGED
+  const validationSchema = useMemo(() => assessment ? buildZodSchema(assessment) : z.record(z.string(), z.any()), [assessment]);
   
   const form = useForm<z.infer<typeof validationSchema>>({
     resolver: zodResolver(validationSchema),
   });
 
   const submitMutation = useMutation({
-    mutationFn: (data: any) => submitAssessment(jobId, data),
+    mutationFn: (data: z.infer<typeof validationSchema>) => submitAssessment(jobId, data),
     onSuccess: () => {
       toast.success("Assessment submitted successfully!");
       form.reset();

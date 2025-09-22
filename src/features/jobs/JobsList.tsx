@@ -63,6 +63,11 @@ type ReorderVariables = {
   overId: string;
 };
 
+type UpdateJobVariables = {
+  jobId: string;
+  updates: Partial<Job>;
+};
+
 type ReorderContext = {
   previousJobsData?: JobsQueryData;
 };
@@ -84,7 +89,7 @@ export function JobsList({ onEditJob }: JobsListProps) {
 
   const reorderMutation = useMutation<
     ReorderJobResponse,
-    unknown,
+    Error, 
     ReorderVariables,
     ReorderContext
   >({
@@ -92,8 +97,7 @@ export function JobsList({ onEditJob }: JobsListProps) {
     onMutate: async (variables) => {
       await queryClient.cancelQueries({ queryKey });
       const previousJobsData = queryClient.getQueryData<JobsQueryData>(queryKey);
-
-      queryClient.setQueryData<JobsQueryData>(queryKey, (oldData) => {
+      queryClient.setQueryData<JobsQueryData>(queryKey, (oldData: JobsQueryData | undefined) => {
         if (!oldData) return oldData;
 
         const oldJobs = oldData.data;
@@ -102,13 +106,13 @@ export function JobsList({ onEditJob }: JobsListProps) {
         const overIndex = oldJobs.findIndex((j) => j.id === overId);
 
         if (activeIndex === -1 || overIndex === -1) return oldData;
-
+        
         return { ...oldData, data: arrayMove(oldJobs, activeIndex, overIndex) };
       });
 
       return { previousJobsData };
     },
-    onError: (_err, _variables, context) => {
+    onError: (_err: Error, _variables, context) => { // Type the error parameter
       toast.error("Failed to reorder job. Reverting.");
       if (context?.previousJobsData) {
         queryClient.setQueryData(queryKey, context.previousJobsData);
@@ -116,9 +120,8 @@ export function JobsList({ onEditJob }: JobsListProps) {
     },
   });
 
-  const updateJobMutation = useMutation({
-    mutationFn: ({ jobId, updates }: { jobId: string; updates: Partial<Job> }) =>
-      updateJob(jobId, updates),
+  const updateJobMutation = useMutation<Job, Error, UpdateJobVariables>({
+    mutationFn: ({ jobId, updates }) => updateJob(jobId, updates),
     onSuccess: () => {
       toast.success("Job status updated.");
       queryClient.invalidateQueries({ queryKey });

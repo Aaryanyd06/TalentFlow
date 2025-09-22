@@ -18,7 +18,7 @@ type GetJobsParams = {
 
 type SubmitAssessmentPayload = {
   jobId: string;
-  submission: Record<string, unknown>; // safer than any
+  submission: Record<string, unknown>;
   submittedAt: string;
 };
 

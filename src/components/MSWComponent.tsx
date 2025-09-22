@@ -6,8 +6,10 @@ export function MSWComponent() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       if (process.env.NODE_ENV === "development") {
-        require("@/mocks/browser").worker.start().then(() => {
-          fetch("/api/seed", { method: "POST" });
+        import("@/mocks/browser").then(({ worker }) => {
+          worker.start().then(() => {
+            fetch("/api/seed", { method: "POST" });
+          });
         });
       }
     }

@@ -1,14 +1,20 @@
 "use client";
 
 import { useAssessmentBuilderStore } from "@/store/assessmentBuilderStore";
-import { useForm } from "react-hook-form";
+import { useForm, type Control, type FieldValues } from "react-hook-form";
 import type { AssessmentQuestion } from "@/types";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-function QuestionRenderer({ question, control }: { question: AssessmentQuestion, control: any }) {
+type QuestionRendererProps = {
+  question: AssessmentQuestion;
+  // FIX 1: Replaced 'any' with the correct type from react-hook-form
+  control: Control<FieldValues>;
+};
+
+function QuestionRenderer({ question, control }: QuestionRendererProps) {
   const labelContent = (
     <>
       {question.label}
@@ -34,7 +40,7 @@ function QuestionRenderer({ question, control }: { question: AssessmentQuestion,
         />
       );
     case "long-text":
-       return (
+      return (
         <FormField
           control={control}
           name={question.id}
@@ -50,7 +56,7 @@ function QuestionRenderer({ question, control }: { question: AssessmentQuestion,
         />
       );
     case "single-choice":
-       return (
+      return (
         <FormField
           control={control}
           name={question.id}
@@ -64,12 +70,12 @@ function QuestionRenderer({ question, control }: { question: AssessmentQuestion,
                   className="flex flex-col space-y-1"
                 >
                   {(question.options ?? []).map(opt => (
-                     <FormItem key={opt} className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                           <RadioGroupItem value={opt} />
-                        </FormControl>
-                        <FormLabel className="font-normal">{opt}</FormLabel>
-                     </FormItem>
+                    <FormItem key={opt} className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value={opt} />
+                      </FormControl>
+                      <FormLabel className="font-normal">{opt}</FormLabel>
+                    </FormItem>
                   ))}
                 </RadioGroup>
               </FormControl>
@@ -97,7 +103,8 @@ function QuestionRenderer({ question, control }: { question: AssessmentQuestion,
     default:
       return (
         <div className="p-3 text-sm rounded-md bg-muted text-muted-foreground">
-          Preview for "{question.type}" question not implemented yet.
+          {/* FIX 2: Replaced " with &quot; to escape the characters */}
+          Preview for &quot;{question.type}&quot; question not implemented yet.
         </div>
       );
   }

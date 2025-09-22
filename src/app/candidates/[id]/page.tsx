@@ -97,7 +97,7 @@ export default function CandidateProfilePage() {
                 })}
               </time>
               {event.type === 'stage-change' && (
-                <h3 className="text-lg font-semibold capitalize">Moved to "{event.stage}" stage</h3>
+                <h3 className="text-lg font-semibold capitalize">Moved to &quot;{event.stage}&quot; stage</h3>
               )}
               {event.type === 'note' && (
                 <p className="text-base font-normal text-foreground bg-card border rounded-md p-3 mt-1 whitespace-pre-wrap">{event.notes}</p>

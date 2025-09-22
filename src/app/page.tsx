@@ -1,9 +1,10 @@
-'use client';
+"use client";
 
 import type { FC, SVGProps } from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { Plus, File } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const MonitorIcon: FC<SVGProps<SVGSVGElement>> = (props) => (
     <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -124,9 +125,9 @@ const Card: FC<{
         <span>{files} File</span>
       </div>
       <div className="flex items-center gap-2">
-         <div className="w-16 bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
-           <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: `${progress}%` }}></div>
-         </div>
+       <div className="w-16 bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+         <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: `${progress}%` }}></div>
+       </div>
         <span className='font-medium text-blue-500'>{progress}%</span>
       </div>
     </div>
@@ -151,10 +152,10 @@ const KanbanColumn: FC<{ title: string; count: number; children: React.ReactNode
 
 export default function LandingPage() {
   const benefits = [
-    { Icon: MonitorIcon, title: "Easily Access", description: "You can access it on a phone or laptop." },
-    { Icon: GridIcon, title: "Many Features", description: "We have the best features that help you manage." },
-    { Icon: UsersIcon, title: "Collaboration", description: "With our platform, you can collaborate with the other HR." },
-    { Icon: SaveIcon, title: "Auto Save", description: "Uses the internet so every update will auto save." }
+    { Icon: MonitorIcon, title: "Easily Access", description: "You can access it on a phone or laptop.", color: "#003F5C" },
+    { Icon: GridIcon, title: "Many Features", description: "We have the best features that help you manage.", color: "#58508D" },
+    { Icon: UsersIcon, title: "Collaboration", description: "With our platform, you can collaborate with the other HR.", color: "#BC5090" },
+    { Icon: SaveIcon, title: "Auto Save", description: "Uses the internet so every update will auto save.", color: "#FF6361" }
   ];
 
   const testimonials = [
@@ -169,7 +170,6 @@ export default function LandingPage() {
   return (
     <>
     <main className="bg-white dark:bg-black text-gray-800 dark:text-gray-200">
-      {/* Hero Section */}
       <section className="relative isolate overflow-hidden bg-white dark:bg-black px-6 pt-8 lg:px-8">
         <div className="mx-auto max-w-2xl py-16 sm:py-20 lg:py-24">
          <AnimatedComponent>
@@ -189,18 +189,18 @@ export default function LandingPage() {
           <AnimatedComponent delay={200}>
           <div className="text-center">
             <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
-              HR Management Definitely Easy And Simple
+              Making HR Management Easy And Simple
             </h1>
             <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
               Simplify Operations, Empower Teams, And Optimize Workforce Efficiency With Our Comprehensive Human Resources Solutions
             </p>
             <div className="mt-10 flex items-center justify-center">
-              <a
-                href="#"
-                className="rounded-md bg-gray-900 dark:bg-gray-700 px-5 py-3 text-base font-semibold text-white shadow-sm hover:bg-gray-800 dark:hover:bg-gray-600 transition-colors"
+              <Link
+                href="/dashboard"
+                className="rounded-md bg-[#003F5C] px-5 py-3 text-base font-semibold text-white shadow-sm hover:bg-[#00324a] transition-colors"
               >
                 Get Started For Free
-              </a>
+              </Link>
             </div>
           </div>
           </AnimatedComponent>
@@ -210,54 +210,54 @@ export default function LandingPage() {
       {/* Product Showcase Section */}
       <section className="py-24 sm:py-32 bg-gray-50/70 dark:bg-black">
        <AnimatedComponent className="mx-auto max-w-5xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-              <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">Manage Your Entire Team In One Place</h2>
-              <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
-                  A single, centralized hub for all your recruitment needs. Track applicants, schedule interviews, and collaborate with your team seamlessly.
-              </p>
-          </div>
-          <div className="mt-16 flow-root">
-              <div className="-m-2 rounded-xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4">
-                <div className="rounded-lg bg-white dark:bg-black shadow-2xl ring-1 ring-gray-900/10">
-                    <div className="flex items-center gap-2 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
-                        <span className="w-3 h-3 rounded-full bg-red-400"></span>
-                        <span className="w-3 h-3 rounded-full bg-yellow-400"></span>
-                        <span className="w-3 h-3 rounded-full bg-green-400"></span>
-                    </div>
-                    <div className="p-8 bg-gray-100/50 dark:bg-gray-900/50 min-h-[600px]">
-                        <div className='flex justify-between items-start mb-8'>
-                            <div>
-                              <h1 className='text-2xl font-bold text-gray-900 dark:text-white'>Product Designer</h1>
-                              <p className='text-sm text-gray-500 dark:text-gray-400'>Professional responsible for creating experience product</p>
-                            </div>
-                            <button className="bg-gray-900 dark:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-lg flex items-center gap-2">
-                              <File className="w-4 h-4" />
-                              Export Report
-                            </button>
-                        </div>
-                         <div className="flex gap-6 overflow-x-auto pb-4">
-                            <KanbanColumn title="Applied Job" count={10}>
-                              <Card name="Robert Fox" email="robertfox@email.com" avatar="https://placehold.co/40x40/E2E8F0/4A5568?text=RF" description="Passionate product designer dedicated to crafting..." files={13} progress={0} />
-                              <Card name="Cody Fisher" email="cfisher@email.com" avatar="https://placehold.co/40x40/E2E8F0/4A5568?text=CF" description="Passion for creating intuitive and visually appealing..." files={11} progress={0} />
-                            </KanbanColumn>
-                            <KanbanColumn title="Review Profile" count={3}>
-                               <Card name="Ralph Edwards" email="ralph.e@email.com" avatar="https://placehold.co/40x40/E2E8F0/4A5568?text=RE" description="Dedicated product designer, I am enthusiastic about..." files={13} progress={78} />
-                               <Card name="Dianne Lane" email="dianne.l@email.com" avatar="https://placehold.co/40x40/E2E8F0/4A5568?text=DL" description="Deep understanding of user-centric design & strong..." files={11} progress={65} />
-                            </KanbanColumn>
-                             <KanbanColumn title="Interview" count={5}>
-                                <Card name="Kathryn Murphy" email="kathryn.m@email.com" avatar="https://placehold.co/40x40/E2E8F0/4A5568?text=KM" description="Expertise in product design and my passion for..." files={13} progress={84} />
-                                <Card name="Kristin Watson" email="kristin.w@email.com" avatar="https://placehold.co/40x40/E2E8F0/4A5568?text=KW" description="Interest in the product design, offering a strong foundation..." files={9} progress={87} />
-                            </KanbanColumn>
-                            <KanbanColumn title="Hiring Job" count={3}>
-                                <Card name="Floyd Miles" email="floyd.m@email.com" avatar="https://placehold.co/40x40/E2E8F0/4A5568?text=FM" description="Passionate about the crafting seamless experiences..." files={5} progress={90} />
-                                 <Card name="Bessie Cooper" email="bessie.c@email.com" avatar="https://placehold.co/40x40/E2E8F0/4A5568?text=BC" description="Delivering on the exceptional design..." files={11} progress={90} />
-                            </KanbanColumn>
-                        </div>
-                    </div>
-                </div>
-              </div>
-          </div>
-        </AnimatedComponent>
+         <div className="mx-auto max-w-2xl text-center">
+             <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">Manage Your Entire Team In One Place</h2>
+             <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
+                 A single, centralized hub for all your recruitment needs. Track applicants, schedule interviews, and collaborate with your team seamlessly.
+             </p>
+         </div>
+         <div className="mt-16 flow-root">
+             <div className="-m-2 rounded-xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4">
+               <div className="rounded-lg bg-white dark:bg-black shadow-2xl ring-1 ring-gray-900/10">
+                   <div className="flex items-center gap-2 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+                       <span className="w-3 h-3 rounded-full bg-red-400"></span>
+                       <span className="w-3 h-3 rounded-full bg-yellow-400"></span>
+                       <span className="w-3 h-3 rounded-full bg-green-400"></span>
+                   </div>
+                   <div className="p-8 bg-gray-100/50 dark:bg-gray-900/50 min-h-[600px]">
+                       <div className='flex justify-between items-start mb-8'>
+                           <div>
+                               <h1 className='text-2xl font-bold text-gray-900 dark:text-white'>Product Designer</h1>
+                               <p className='text-sm text-gray-500 dark:text-gray-400'>Professional responsible for creating experience product</p>
+                           </div>
+                           <button className="bg-gray-900 dark:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-lg flex items-center gap-2">
+                               <File className="w-4 h-4" />
+                               Export Report
+                           </button>
+                       </div>
+                        <div className="flex gap-6 overflow-x-auto pb-4">
+                           <KanbanColumn title="Applied Job" count={10}>
+                             <Card name="Robert Fox" email="robertfox@email.com" avatar="https://placehold.co/40x40/E2E8F0/4A5568?text=RF" description="Passionate product designer dedicated to crafting..." files={13} progress={0} />
+                             <Card name="Cody Fisher" email="cfisher@email.com" avatar="https://placehold.co/40x40/E2E8F0/4A5568?text=CF" description="Passion for creating intuitive and visually appealing..." files={11} progress={0} />
+                           </KanbanColumn>
+                           <KanbanColumn title="Review Profile" count={3}>
+                              <Card name="Ralph Edwards" email="ralph.e@email.com" avatar="https://placehold.co/40x40/E2E8F0/4A5568?text=RE" description="Dedicated product designer, I am enthusiastic about..." files={13} progress={78} />
+                              <Card name="Dianne Lane" email="dianne.l@email.com" avatar="https://placehold.co/40x40/E2E8F0/4A5568?text=DL" description="Deep understanding of user-centric design & strong..." files={11} progress={65} />
+                           </KanbanColumn>
+                            <KanbanColumn title="Interview" count={5}>
+                               <Card name="Kathryn Murphy" email="kathryn.m@email.com" avatar="https://placehold.co/40x40/E2E8F0/4A5568?text=KM" description="Expertise in product design and my passion for..." files={13} progress={84} />
+                               <Card name="Kristin Watson" email="kristin.w@email.com" avatar="https://placehold.co/40x40/E2E8F0/4A5568?text=KW" description="Interest in the product design, offering a strong foundation..." files={9} progress={87} />
+                           </KanbanColumn>
+                           <KanbanColumn title="Hiring Job" count={3}>
+                               <Card name="Floyd Miles" email="floyd.m@email.com" avatar="https://placehold.co/40x40/E2E8F0/4A5568?text=FM" description="Passionate about the crafting seamless experiences..." files={5} progress={90} />
+                                <Card name="Bessie Cooper" email="bessie.c@email.com" avatar="https://placehold.co/40x40/E2E8F0/4A5568?text=BC" description="Delivering on the exceptional design..." files={11} progress={90} />
+                           </KanbanColumn>
+                       </div>
+                   </div>
+                 </div>
+               </div>
+           </div>
+       </AnimatedComponent>
       </section>
       
       <section className="py-24 sm:py-32">
@@ -273,17 +273,17 @@ export default function LandingPage() {
           <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
             <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 lg:max-w-none lg:gap-y-16">
               {benefits.map((benefit, index) => (
-                 <AnimatedComponent key={benefit.title} delay={index * 100}>
-                   <div className="flex flex-col items-center text-center p-6 rounded-xl bg-white dark:bg-gray-900/50 shadow-md transition hover:shadow-xl hover:-translate-y-1">
-                     <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
-                       <benefit.Icon className="h-6 w-6" aria-hidden="true" />
-                     </div>
-                     <dt className="mt-4 text-lg font-semibold leading-7 text-gray-900 dark:text-white">
-                       {benefit.title}
-                     </dt>
-                     <dd className="mt-2 text-base leading-7 text-gray-600 dark:text-gray-300">{benefit.description}</dd>
-                   </div>
-                 </AnimatedComponent>
+                   <AnimatedComponent key={benefit.title} delay={index * 100}>
+                      <div className="flex flex-col items-center text-center p-6 rounded-xl bg-white dark:bg-gray-900/50 shadow-md transition hover:shadow-xl hover:-translate-y-1">
+                       <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
+                         <benefit.Icon className="h-6 w-6" aria-hidden="true" style={{ color: benefit.color }} />
+                       </div>
+                       <dt className="mt-4 text-lg font-semibold leading-7 text-gray-900 dark:text-white">
+                         {benefit.title}
+                       </dt>
+                       <dd className="mt-2 text-base leading-7 text-gray-600 dark:text-gray-300">{benefit.description}</dd>
+                      </div>
+                   </AnimatedComponent>
               ))}
             </dl>
           </div>
@@ -354,11 +354,11 @@ export default function LandingPage() {
                 </div>
             </div>
              <div className="mt-12 max-w-2xl mx-auto text-center">
-                <h3 className="text-xl font-bold text-blue-600 dark:text-blue-400">Job automation</h3>
-                <p className="mt-2 text-lg leading-8 text-gray-600 dark:text-gray-300">
-                   feature so that every candidate that appears in job recruitment is based on data from available open jobs
-                </p>
-            </div>
+                 <h3 className="text-xl font-bold text-blue-600 dark:text-blue-400">Job automation</h3>
+                 <p className="mt-2 text-lg leading-8 text-gray-600 dark:text-gray-300">
+                     feature so that every candidate that appears in job recruitment is based on data from available open jobs
+                 </p>
+             </div>
         </AnimatedComponent>
       </section>
 
@@ -476,3 +476,4 @@ export default function LandingPage() {
     </>
   );
 }
+

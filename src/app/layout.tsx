@@ -1,48 +1,38 @@
+// src/app/layout.tsx
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "@/components/ui/sonner";
-import { MSWComponent } from "@/components/MSWComponent";
 import { Providers } from "@/components/Providers";
-import { ThemeProvider } from "@/components/ThemeProvider";
+import { MSWComponent } from "@/components/MSWComponent";
 import { Header } from "@/components/layout/header";
-import { Sidebar } from "@/components/layout/sidebar";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: "TalentFlow",
-  description: "A mini hiring platform for managing jobs and candidates.",
+  description: "A mini hiring platform",
 };
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Providers>
-            <MSWComponent />
+        <Providers>
+          
+          <MSWComponent>
             <div className="flex h-screen w-full flex-col">
               <Header />
               <div className="flex flex-1 overflow-hidden">
-                <Sidebar />
-                <div className="flex-1 overflow-y-auto">
-                  {children}
-                </div>
+                <main className="flex-1 overflow-y-auto">{children}</main>
               </div>
             </div>
-            <Toaster richColors />
-          </Providers>
-        </ThemeProvider>
+          </MSWComponent>
+        </Providers>
       </body>
     </html>
   );

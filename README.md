@@ -1,36 +1,162 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+TalentFlow – A Mini Hiring Platform
 
-## Getting Started
+A front-end only hiring platform built with Next.js, TypeScript, React, and MSW, designed for HR teams to manage jobs, candidates, and assessments.
+This project simulates a full hiring workflow using a mocked API layer with local persistence.
 
-First, run the development server:
+🚀 Features
+1. Jobs
 
-```bash
+Job board with server-like pagination & filtering (title, status, tags).
+
+Create/Edit jobs with validation (title required, unique slug).
+
+Archive/Unarchive jobs.
+
+Drag-and-drop reordering with optimistic updates + rollback on error.
+
+Deep linking to job detail page: /jobs/:jobId.
+
+2. Candidates
+
+Virtualized candidate list (1,000+ seeded candidates).
+
+Search by name/email + filter by current stage.
+
+Candidate profile: /candidates/:id showing timeline of status changes.
+
+Kanban board to move candidates between stages via drag-and-drop.
+
+Attach notes with @mentions (suggestions from a local list).
+
+3. Assessments
+
+Assessment builder per job: add sections and questions (MCQ, text, numeric, file upload stub).
+
+Live preview as a fillable form.
+
+Local persistence of builder state and candidate responses.
+
+Runtime validation (required fields, numeric ranges, max length).
+
+Conditional questions (e.g., show Q3 only if Q1 = "Yes").
+
+🛠️ Tech Stack
+
+Framework: Next.js (React + TypeScript)
+
+Mock API: MSW (Mock Service Worker)
+
+State Management: React hooks + Context + Local persistence (IndexedDB via Dexie/localForage)
+
+UI: React components (with accessibility & responsive design)
+
+Data Layer: IndexedDB for offline persistence
+
+Testing: Jest + React Testing Library
+
+Deployment: Vercel
+
+📡 Mock API Endpoints
+
+Implemented via MSW, simulating REST API behavior:
+
+Jobs
+
+GET /jobs?search=&status=&page=&pageSize=&sort=
+
+POST /jobs → { id, title, slug, status, tags, order }
+
+PATCH /jobs/:id
+
+PATCH /jobs/:id/reorder (occasionally returns 500 to test rollback)
+
+Candidates
+
+GET /candidates?search=&stage=&page=
+
+POST /candidates → { id, name, email, stage }
+
+PATCH /candidates/:id (stage transitions)
+
+GET /candidates/:id/timeline
+
+Assessments
+
+GET /assessments/:jobId
+
+PUT /assessments/:jobId
+
+POST /assessments/:jobId/submit
+
+📦 Setup & Installation
+# Clone the repo
+git clone https://github.com/your-username/talentflow.git
+cd talentflow
+
+# Install dependencies
+npm install
+
+# Start dev server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The app runs at http://localhost:3000
+.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+🧩 Architecture & Decisions
 
-## Learn More
+Next.js chosen for SSR-ready React + file-based routing (/jobs/:id, /candidates/:id).
 
-To learn more about Next.js, take a look at the following resources:
+TypeScript ensures type safety across components and API contracts.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+MSW simulates API with latency (200–1200ms) + error rates (5–10%) to mimic real-world network conditions.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+IndexedDB persistence allows restoring state on refresh, mimicking a backend.
 
-## Deploy on Vercel
+Virtualization used for candidates list to handle 1000+ records efficiently.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Drag-and-drop via react-beautiful-dnd for reordering jobs & candidate kanban.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Form validation with custom logic for assessments (conditional rules).
+
+🧪 Testing
+
+Unit tests for components with React Testing Library.
+
+MSW used to mock API calls in tests.
+
+Integration tests for job creation, candidate transitions, and assessment submission.
+
+🚀 Deployment
+
+Deployed on Vercel: Live App Link
+
+GitHub Repository
+
+⚠️ Known Issues & Future Work
+
+Error handling could be extended with global toasts/snackbar system.
+
+Assessment file upload currently stubbed.
+
+Candidate notes mentions are mock-only (no backend integration).
+
+Improve accessibility with ARIA attributes on drag-and-drop areas.
+
+📌 Evaluation Criteria Addressed
+
+Code Quality: Modular, typed, tested.
+
+App Structure: Clear folder organization with Next.js routing.
+
+Functionality: All core flows implemented.
+
+UI/UX: Responsive, drag-and-drop interactions, validation feedback.
+
+State Management: Hooks + Context + IndexedDB persistence.
+
+Deployment: Vercel live link provided.
+
+Documentation: This README.
+
+✨ TalentFlow demonstrates a complete front-end hiring platform with realistic workflows, API simulation, and offline persistence — all without a backend.
